@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Geneva — Template Watches</title>
   <meta name="description" content="Geneva — the world capital of precision timekeeping since the 16th century. Discover the city that shaped Template Watches and the art of Swiss horology." />
+  <meta property="og:site_name" content="Template Watches" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Geneva — Template Watches" />
+  <meta property="og:description" content="Geneva — the world capital of precision timekeeping since the 16th century. Discover the city that shaped Template Watches and the art of Swiss horology." />
+  <meta property="og:image" content="https://templatewatches.netlify.app/images/1530122037265.jpg" />
+  <meta property="og:url" content="https://templatewatches.netlify.app/geneva.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Geneva — Template Watches" />
+  <meta name="twitter:description" content="Geneva — the world capital of precision timekeeping since the 16th century. Discover the city that shaped Template Watches and the art of Swiss horology." />
+  <meta name="twitter:image" content="https://templatewatches.netlify.app/images/1530122037265.jpg" />
+  <link rel="canonical" href="https://templatewatches.netlify.app/geneva.html" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet" />
@@ -41,8 +52,22 @@
     .stats-strip-label { font-family:var(--mono); font-size:.5625rem; letter-spacing:.2em; text-transform:uppercase; color:var(--warm-gray); }
     @media(max-width:768px) { .stats-strip { flex-direction:column; } .stats-strip-item { border-right:none; border-bottom:1px solid rgba(247,244,238,.08); } .stats-strip-item:last-child { border-bottom:none; } }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Template Watches",
+    "url": "https://templatewatches.netlify.app",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Geneva",
+      "addressCountry": "CH"
+    }
+  }
+  </script>
 </head>
 <body>
+  <a class="skip-nav" href="#main-content">Skip to main content</a>
 
   <!-- ════════════════════════════════════════
        MOBILE MENU OVERLAY
@@ -77,7 +102,7 @@
   <!-- ════════════════════════════════════════
        PAGE HERO
   ════════════════════════════════════════ -->
-  <header class="page-hero" aria-label="Geneva hero">
+  <header class="page-hero" id="main-content" aria-label="Geneva hero">
     <div
       class="page-hero-bg"
       style="background-image:url('images/1559827291.jpg');"
@@ -257,7 +282,7 @@
         <h2 class="nl-heading reveal reveal-delay-1">Join the<br /><em>Template Circle</em></h2>
         <p class="nl-sub reveal reveal-delay-2">Be first to receive new references, private salon invitations in Geneva, and access to limited atelier editions — never more than 50 pieces.</p>
       </div>
-      <form class="nl-form reveal reveal-delay-1" name="newsletter" method="POST" data-netlify="true"><input type="hidden" name="form-name" value="newsletter" />
+      <form class="nl-form reveal reveal-delay-1" name="newsletter" method="POST" action="/success" data-netlify="true"><input type="hidden" name="form-name" value="newsletter" />
         <div class="nl-input-row"><input class="nl-input" type="text" name="name" placeholder="Your name" aria-label="Your name" required /></div>
         <div class="nl-input-row">
           <input class="nl-input" type="email" name="email" placeholder="your@email.com" aria-label="Email address" required />

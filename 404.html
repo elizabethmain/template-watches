@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Not Found — Template Watches</title>
+  <meta name="robots" content="noindex" />
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    .error-page { min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: var(--gutter); background: var(--ivory); }
+    .error-num { font-family: var(--serif); font-size: clamp(6rem, 20vw, 14rem); font-weight: 300; color: var(--ink-12); line-height: 1; margin-bottom: .5rem; letter-spacing: -.04em; }
+    .error-label { font-family: var(--mono); font-size: .6875rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 1.5rem; }
+    .error-heading { font-family: var(--serif); font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 300; color: var(--ink); line-height: 1.15; margin-bottom: 1.25rem; }
+    .error-heading em { font-style: italic; color: var(--gold); }
+    .error-body { font-family: var(--serif); font-size: 1rem; font-style: italic; color: var(--warm-gray); max-width: 36ch; line-height: 1.7; margin-bottom: 2.5rem; }
+    .error-divider { width: 40px; height: 1px; background: var(--gold); margin: 0 auto 2.5rem; }
+    .error-links { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; }
+    .error-link { font-family: var(--mono); font-size: .6875rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink); border-bottom: 1px solid var(--ink-40); padding-bottom: 2px; transition: color .3s, border-color .3s; }
+    .error-link:hover { color: var(--gold); border-color: var(--gold); }
+  </style>
+</head>
+<body>
+  <div class="error-page">
+    <p class="error-num">404</p>
+    <p class="error-label">Page not found</p>
+    <h1 class="error-heading">This page has<br /><em>left the atelier.</em></h1>
+    <div class="error-divider"></div>
+    <p class="error-body">The page you're looking for may have moved or no longer exists.</p>
+    <nav class="error-links" aria-label="Helpful links">
+      <a href="/" class="error-link">Home</a>
+      <a href="/collection.html" class="error-link">Collection</a>
+      <a href="/services/private-appointment.html" class="error-link">Request Appointment</a>
+      <a href="/services/contact.html" class="error-link">Contact</a>
+    </nav>
+  </div>
+</body>
+</html>

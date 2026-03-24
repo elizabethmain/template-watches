@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Template Watches — Geneva, Switzerland</title>
   <meta name="description" content="Handcrafted luxury timepieces from Geneva, Switzerland. Template Watches — where heritage meets precision." />
+  <meta property="og:site_name" content="Template Watches" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Template Watches — Geneva, Switzerland" />
+  <meta property="og:description" content="Handcrafted luxury timepieces from Geneva, Switzerland. Template Watches — where heritage meets precision." />
+  <meta property="og:image" content="https://templatewatches.netlify.app/images/1530122037265.jpg" />
+  <meta property="og:url" content="https://templatewatches.netlify.app/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Template Watches — Geneva, Switzerland" />
+  <meta name="twitter:description" content="Handcrafted luxury timepieces from Geneva, Switzerland. Template Watches — where heritage meets precision." />
+  <meta name="twitter:image" content="https://templatewatches.netlify.app/images/1530122037265.jpg" />
+  <link rel="canonical" href="https://templatewatches.netlify.app/" />
   <!-- CDN preconnects — eliminate DNS+TLS round-trips before any fetch -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -33,8 +44,25 @@
     <style>
     /* page-specific styles only — shared styles are in styles.css */
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Template Watches",
+    "url": "https://templatewatches.netlify.app",
+    "logo": "https://templatewatches.netlify.app/images/1530122037265.jpg",
+    "description": "Handcrafted luxury timepieces from Geneva, Switzerland. Est. 1887.",
+    "foundingDate": "1887",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Geneva",
+      "addressCountry": "CH"
+    }
+  }
+  </script>
 </head>
 <body>
+  <a class="skip-nav" href="#main-content">Skip to main content</a>
 
   <!-- ════════════════════════════════════════
        MOBILE MENU OVERLAY
@@ -74,7 +102,7 @@
   <!-- ════════════════════════════════════════
        HERO
   ════════════════════════════════════════ -->
-  <section class="hero" aria-label="Hero">
+  <section class="hero" id="main-content" aria-label="Hero">
     <div class="hero-bg" id="heroBg"></div>
     <div class="hero-overlay"></div>
 
@@ -447,7 +475,7 @@
           Be first to receive new references, private salon invitations in Geneva, and access to limited atelier editions — never more than 50 pieces.
         </p>
       </div>
-      <form class="nl-form reveal reveal-delay-1" name="newsletter" method="POST" data-netlify="true"><input type="hidden" name="form-name" value="newsletter" />
+      <form class="nl-form reveal reveal-delay-1" name="newsletter" method="POST" action="/success" data-netlify="true"><input type="hidden" name="form-name" value="newsletter" />
         <div class="nl-input-row">
           <input class="nl-input" type="text" name="name" placeholder="Your name" aria-label="Your name" required />
         </div>
@@ -532,3 +560,4 @@
   <script src="main.js"></script>
 </body>
 </html>
+

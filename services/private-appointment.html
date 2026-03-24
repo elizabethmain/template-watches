@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Private Appointment — Template Watches</title>
   <meta name="description" content="Request a private viewing at our Geneva atelier. Template Watches receives guests by appointment only for a curated, unhurried experience." />
+  <meta property="og:site_name" content="Template Watches" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Private Appointment — Template Watches" />
+  <meta property="og:description" content="Request a private viewing at our Geneva atelier. Template Watches receives guests by appointment only for a curated, unhurried experience." />
+  <meta property="og:image" content="https://templatewatches.netlify.app/images/1530122037265.jpg" />
+  <meta property="og:url" content="https://templatewatches.netlify.app/services/private-appointment.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Private Appointment — Template Watches" />
+  <meta name="twitter:description" content="Request a private viewing at our Geneva atelier. Template Watches receives guests by appointment only for a curated, unhurried experience." />
+  <meta name="twitter:image" content="https://templatewatches.netlify.app/images/1530122037265.jpg" />
+  <link rel="canonical" href="https://templatewatches.netlify.app/services/private-appointment.html" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet" />
@@ -50,8 +61,22 @@
     .return-link:hover { color:var(--gold); border-color:var(--gold); }
     @media(max-width:768px) { .service-form-row { grid-template-columns:1fr; } .assurance-strip { grid-template-columns:1fr; } .service-submit { width:100%; } }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Template Watches",
+    "url": "https://templatewatches.netlify.app",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Geneva",
+      "addressCountry": "CH"
+    }
+  }
+  </script>
 </head>
 <body>
+  <a class="skip-nav" href="#main-content">Skip to main content</a>
 
   <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
     <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&#215;</button>
@@ -77,7 +102,7 @@
     <div class="nav-hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
   </nav>
 
-  <section class="page-hero-thin">
+  <section class="page-hero-thin" id="main-content">
     <div class="page-hero-bg" style="background-image:url('../images/1506905925346.jpg');"></div>
     <div class="page-hero-overlay"></div>
     <div class="page-hero-content">
@@ -96,7 +121,7 @@
 
       <p class="service-body">Each appointment is arranged personally by our atelier team and tailored entirely to your interests. You will be welcomed into a private salon, where a master horologist will guide you through our current collection and, should you wish, discuss the possibilities of a bespoke commission. Appointments typically last between 60 and 90 minutes, and we ask for at least five working days' notice to ensure full preparation.</p>
 
-      <form class="service-form" name="private-appointment" method="POST" data-netlify="true" data-netlify-honeypot="bot-field"><input type="hidden" name="form-name" value="private-appointment" /><input type="hidden" name="bot-field" style="display:none" />
+      <form class="service-form" name="private-appointment" method="POST" action="/success" data-netlify="true" data-netlify-honeypot="bot-field"><input type="hidden" name="form-name" value="private-appointment" /><input type="hidden" name="bot-field" style="display:none" />
         <div class="service-form-row">
           <div>
             <label class="service-label" for="first-name">First Name</label>

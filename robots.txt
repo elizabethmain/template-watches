@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://templatewatches.netlify.app/sitemap.xml

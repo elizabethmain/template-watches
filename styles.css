@@ -189,7 +189,7 @@
     .hero-bg {
       position: absolute;
       inset: 0;
-      background-image: url("https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=1400&q=75&auto=compress,format&fit=crop");
+      background-image: url("images/1530122037265.jpg");
       background-size: cover;
       background-position: center 30%;
       transform: scale(1.06);
@@ -872,7 +872,7 @@
     .newsletter-bg {
       position: absolute;
       inset: 0;
-      background-image: url("https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=900&q=65&auto=compress,format&fit=crop");
+      background-image: url("images/1530122037265-800.jpg");
       background-size: cover;
       background-position: center;
       opacity: .18;
@@ -1158,6 +1158,55 @@
     }
     .nav-hamburger span {
       transition: transform .3s var(--ease-expo), opacity .3s;
+    }
+
+    /* ─────────────────────────────────────────
+       SKIP NAVIGATION
+    ───────────────────────────────────────── */
+    .skip-nav {
+      position: absolute;
+      top: -100%;
+      left: 1rem;
+      z-index: 10000;
+      padding: .75rem 1.5rem;
+      background: var(--ink);
+      color: var(--ivory);
+      font-family: var(--mono);
+      font-size: .6875rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      border-radius: 0 0 2px 2px;
+      transition: top .15s;
+    }
+    .skip-nav:focus { top: 0; outline: none; }
+
+    /* ─────────────────────────────────────────
+       FOCUS VISIBLE — keyboard navigation
+    ───────────────────────────────────────── */
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+    .nav-links a:focus-visible,
+    .nav-cta:focus-visible,
+    .btn-primary:focus-visible,
+    .btn-ghost:focus-visible,
+    .watch-card-cta:focus-visible,
+    .footer-links a:focus-visible,
+    .footer-social-link:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
+    .nl-input:focus-visible,
+    .service-input:focus-visible {
+      outline: none; /* border-color handles this already */
+    }
+    .nl-submit:focus-visible,
+    .service-submit:focus-visible {
+      outline: 2px solid var(--gold-light);
+      outline-offset: 3px;
     }
 
     /* ─────────────────────────────────────────

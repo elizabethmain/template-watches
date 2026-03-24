@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://templatewatches.netlify.app/</loc><priority>1.0</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/collection.html</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/heritage.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/craftsmanship.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/geneva.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/collection/lac-leman.html</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/collection/rhone-tourbillon.html</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/collection/mont-blanc-chrono.html</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/collection/grand-feu-enamel.html</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/collection/complications.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/maison/atelier.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/maison/bespoke.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/maison/heritage.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/maison/craftsmanship.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/maison/press.html</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/services/private-appointment.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/services/after-sales.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/services/certification.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://templatewatches.netlify.app/services/contact.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+</urlset>

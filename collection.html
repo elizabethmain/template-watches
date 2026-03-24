@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Collection — Template Watches</title>
   <meta name="description" content="Explore the 2025 Template Watches collection — five signature timepieces handcrafted in our Geneva atelier. Dress, sport, tourbillon and grand complication references." />
+  <meta property="og:site_name" content="Template Watches" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Collection — Template Watches" />
+  <meta property="og:description" content="Explore the 2025 Template Watches collection — five signature timepieces handcrafted in our Geneva atelier. Dress, sport, tourbillon and grand complication references." />
+  <meta property="og:image" content="https://templatewatches.netlify.app/images/1530122037265.jpg" />
+  <meta property="og:url" content="https://templatewatches.netlify.app/collection.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Collection — Template Watches" />
+  <meta name="twitter:description" content="Explore the 2025 Template Watches collection — five signature timepieces handcrafted in our Geneva atelier. Dress, sport, tourbillon and grand complication references." />
+  <meta name="twitter:image" content="https://templatewatches.netlify.app/images/1530122037265.jpg" />
+  <link rel="canonical" href="https://templatewatches.netlify.app/collection.html" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet" />
@@ -136,8 +147,22 @@
       }
     }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Template Watches",
+    "url": "https://templatewatches.netlify.app",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Geneva",
+      "addressCountry": "CH"
+    }
+  }
+  </script>
 </head>
 <body>
+  <a class="skip-nav" href="#main-content">Skip to main content</a>
 
   <!-- ════════════════════════════════════════
        MOBILE MENU OVERLAY
@@ -177,7 +202,7 @@
   <!-- ════════════════════════════════════════
        PAGE HERO
   ════════════════════════════════════════ -->
-  <div class="page-hero" aria-label="Collection hero">
+  <div class="page-hero" id="main-content" aria-label="Collection hero">
     <div
       class="page-hero-bg"
       style="background-image: url('images/1523275335684.jpg');"
@@ -367,7 +392,7 @@
         <h2 class="nl-heading reveal reveal-delay-1">Join the<br /><em>Template Circle</em></h2>
         <p class="nl-sub reveal reveal-delay-2">Be first to receive new references, private salon invitations in Geneva, and access to limited atelier editions — never more than 50 pieces.</p>
       </div>
-      <form class="nl-form reveal reveal-delay-1" name="newsletter" method="POST" data-netlify="true"><input type="hidden" name="form-name" value="newsletter" />
+      <form class="nl-form reveal reveal-delay-1" name="newsletter" method="POST" action="/success" data-netlify="true"><input type="hidden" name="form-name" value="newsletter" />
         <div class="nl-input-row">
           <input class="nl-input" type="text" name="name" placeholder="Your name" aria-label="Your name" required />
         </div>
