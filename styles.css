@@ -30,6 +30,7 @@
        RESET + BASE
     ───────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * { -webkit-tap-highlight-color: rgba(0,0,0,0); }
     html { font-size: 16px; }
     body {
       background: var(--ivory);
@@ -1223,10 +1224,6 @@
 
       /* Hero */
       .hero { min-height: 100svh; }
-      .hero-bg {
-        /* Serve a smaller image on mobile */
-        background-image: url("https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=800&q=72&auto=compress,format&fit=crop");
-      }
       .hero-content { padding: 0 1.25rem; }
       .hero-actions {
         flex-direction: column;
@@ -1291,9 +1288,15 @@
       .footer-top { grid-template-columns: 1fr; gap: 2.5rem; }
       .footer-bottom { flex-direction: column; align-items: flex-start; gap: 1rem; }
 
-      /* Touch-friendly tap targets across the board */
-      .watch-card-cta { padding-bottom: 6px; }
-      .footer-links a { padding: .3rem 0; display: inline-block; min-height: 36px; }
+      /* Touch-friendly tap targets — 44px minimum */
+      .watch-card-cta {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        padding: .6rem 0;
+        font-size: .75rem;
+      }
+      .footer-links a { padding: .4rem 0; display: inline-block; min-height: 44px; line-height: 44px; }
       .footer-social-link { width: 44px; height: 44px; }
     }
 
@@ -1305,5 +1308,7 @@
       .watch-card-img { height: 280px; }
       .gallery-item { flex: 0 0 85vw; }
       .heritage-image { min-height: 220px; }
-      .nl-input { font-size: 1rem; } /* prevents iOS zoom on focus */
+      .nl-input { font-size: 1rem; }     /* prevents iOS zoom on focus */
+      .service-input { font-size: 1rem; } /* prevents iOS zoom on service forms */
+      select.service-input { font-size: 1rem; }
     }
