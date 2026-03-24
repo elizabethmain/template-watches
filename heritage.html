@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Heritage — Template Watches</title>
+  <meta name="description" content="Since 1887, Template Watches has crafted timepieces in our Geneva atelier. Discover the story of Édouard Renard and 137 years of Swiss horological mastery." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* PAGE-SPECIFIC STYLES */
+    .page-hero {
+      position: relative;
+      height: clamp(320px, 45vh, 520px);
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      margin-top: 0;
+    }
+    .page-hero-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+    }
+    .page-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(12,11,9,.85) 0%, rgba(12,11,9,.3) 60%, rgba(12,11,9,.5) 100%);
+    }
+    .page-hero-content {
+      position: relative;
+      z-index: 2;
+      padding: clamp(2rem,4vw,4rem) var(--gutter);
+      width: 100%;
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+    .page-hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .page-hero-title {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 6vw, 5.5rem);
+      font-weight: 300;
+      color: var(--ivory);
+      line-height: 1;
+      letter-spacing: -.01em;
+    }
+    .page-hero-title em { font-style: italic; color: var(--gold-light); }
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: clamp(2.5rem, 4vw, 4rem);
+    }
+    .filter-btn {
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--warm-gray);
+      border: 1px solid var(--ink-12);
+      padding: .5rem 1.25rem;
+      border-radius: 2px;
+      cursor: pointer;
+      background: none;
+      transition: color .3s, border-color .3s, background .3s;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      color: var(--ink);
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    /* Timeline */
+    .heritage-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 680px;
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 2rem;
+      padding: 2.5rem 0;
+      border-bottom: 1px solid var(--ink-12);
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-year {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--gold-dim);
+      line-height: 1;
+      padding-top: .15rem;
+    }
+    .timeline-body-title {
+      font-family: var(--serif);
+      font-size: 1.125rem;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: .5rem;
+    }
+    .timeline-body-text {
+      font-size: .875rem;
+      color: var(--warm-gray);
+      line-height: 1.8;
+    }
+    @media (max-width: 480px) {
+      .timeline-item { grid-template-columns: 60px 1fr; gap: 1rem; }
+    }
+
+    /* Timeline section layout */
+    .timeline-section {
+      padding: clamp(5rem, 9vw, 9rem) var(--gutter);
+    }
+    .timeline-section-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+    .timeline-header {
+      margin-bottom: clamp(3rem, 5vw, 5rem);
+    }
+    .timeline-heading {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4.5vw, 3.75rem);
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1.05;
+      letter-spacing: -.01em;
+      margin-top: 1.25rem;
+    }
+    .timeline-heading em { font-style: italic; color: var(--gold-dim); }
+
+    /* Stats strip */
+    .stats-strip {
+      background: var(--ink);
+      padding: clamp(3rem, 5vw, 5rem) var(--gutter);
+    }
+    .stats-strip-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .stats-strip-item {
+      text-align: center;
+      border-right: 1px solid rgba(247,244,238,.12);
+      padding: 0 2rem;
+    }
+    .stats-strip-item:last-child { border-right: none; }
+    .stats-strip-num {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300;
+      color: var(--gold-light);
+      line-height: 1;
+      display: block;
+      margin-bottom: .5rem;
+    }
+    .stats-strip-label {
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--ivory-60);
+    }
+
+    @media (max-width: 600px) {
+      .stats-strip-inner {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      .stats-strip-item {
+        border-right: none;
+        border-bottom: 1px solid rgba(247,244,238,.12);
+        padding: 2rem 0;
+      }
+      .stats-strip-item:last-child {
+        border-bottom: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════
+       MOBILE MENU OVERLAY
+  ════════════════════════════════════════ -->
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&#215;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="collection.html" class="mobile-menu-link">Collection</a></li>
+      <li><a href="heritage.html" class="mobile-menu-link">Heritage</a></li>
+      <li><a href="craftsmanship.html" class="mobile-menu-link">Craftsmanship</a></li>
+      <li><a href="geneva.html" class="mobile-menu-link">Geneva</a></li>
+    </ul>
+    <a href="services/private-appointment.html" class="mobile-nav-cta mobile-menu-link">
+      Request Appointment
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </a>
+    <p class="mobile-menu-footer">Geneva · Switzerland · Est. 1887</p>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       NAVIGATION
+  ════════════════════════════════════════ -->
+  <nav id="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo">Template Watches</a>
+    <ul class="nav-links">
+      <li><a href="collection.html">Collection</a></li>
+      <li><a href="heritage.html">Heritage</a></li>
+      <li><a href="craftsmanship.html">Craftsmanship</a></li>
+      <li><a href="geneva.html">Geneva</a></li>
+    </ul>
+    <a href="services/private-appointment.html" class="nav-cta">Request Appointment</a>
+    <div class="nav-hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- ════════════════════════════════════════
+       PAGE HERO
+  ════════════════════════════════════════ -->
+  <div class="page-hero" aria-label="Heritage hero">
+    <div
+      class="page-hero-bg"
+      style="background-image: url('images/1506905925346.jpg');"
+      role="img"
+      aria-label="Swiss Alps reflected in an alpine lake"
+    ></div>
+    <div class="page-hero-overlay" aria-hidden="true"></div>
+    <div class="page-hero-content">
+      <div class="page-hero-eyebrow">
+        <span class="divider" style="background: var(--gold-light);"></span>
+        <span class="label" style="color: var(--gold-light);">Est. 1887</span>
+      </div>
+      <h1 class="page-hero-title">
+        Born on the<br /><em>shores of<br />Lac Léman</em>
+      </h1>
+    </div>
+  </div>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+  <!-- ════════════════════════════════════════
+       FOUNDER STORY — FULL-BLEED SPLIT
+  ════════════════════════════════════════ -->
+  <div class="heritage section-full" aria-label="Founder story">
+    <div class="heritage-image">
+      <img
+        src="images/1559827291.jpg"
+        srcset="images/1559827291.jpg 480w,
+                images/1559827291.jpg 720w,
+                images/1559827291.jpg 960w"
+        sizes="(max-width: 1024px) 100vw, 50vw"
+        alt="Jet d'Eau on Lake Geneva, birthplace of Template Watches"
+        loading="lazy"
+        decoding="async"
+      />
+      <span class="heritage-image-caption">Geneva, Switzerland — 46.2044° N, 6.1432° E</span>
+    </div>
+    <div class="heritage-content">
+      <p class="label reveal">Our Heritage</p>
+      <h2 class="heritage-heading reveal reveal-delay-1">
+        A lineage of<br /><em>uncompromising<br />precision</em>
+      </h2>
+      <div class="heritage-body reveal reveal-delay-2">
+        <p>
+          In 1887, master watchmaker Édouard Renard established our atelier in the heart of Geneva's Plainpalais district. Drawing on the city's centuries-long tradition of horology, he fused Calvinist precision with a distinctly Genevan artistry — a philosophy that every Template Watch carries to this day. With three apprentices, a lathe imported from Glashütte, and a singular conviction that a watch should outlast its owner, Renard created not merely a business but a standard of excellence that defined independent Swiss watchmaking for generations.
+        </p>
+        <br />
+        <p>
+          Through two world wars, economic upheaval, and the quartz crisis of the 1970s that decimated the Swiss watch industry, our atelier never wavered. Where others outsourced or mechanised, we deepened our commitment to hand assembly. Each calibre continued to be designed, engineered, and finished entirely within our workshops on Rue de Rive — the same cobbled street where Édouard first set his watchmaker's loupe to his eye. The house became a sanctuary for master horologists who believed that the worth of a timepiece resided not in its case metal, but in the invisible labour within.
+        </p>
+        <br />
+        <p>
+          Today, twelve master horologists carry that tradition forward. Each receives over 6,200 hours of training before their hands ever touch a production movement. They assemble no more than twelve pieces a day, each signed by the individual who built it. In an era of mass production, Template Watches remains stubbornly, defiantly handmade — not as a marketing proposition, but because Édouard Renard's founding conviction has never been superseded: that a watch made with absolute care for the person who will one day wind it is a different object entirely from any other.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       TIMELINE
+  ════════════════════════════════════════ -->
+  <section class="timeline-section" aria-label="Heritage milestones">
+    <div class="timeline-section-inner">
+      <div class="timeline-header">
+        <p class="label reveal">Milestones</p>
+        <div class="divider" style="display:block;margin:.75rem 0 1.25rem;"></div>
+        <h2 class="timeline-heading reveal reveal-delay-1">
+          A century and a<br /><em>half of precision</em>
+        </h2>
+      </div>
+      <div class="heritage-timeline">
+
+        <div class="timeline-item reveal">
+          <div class="timeline-year">1887</div>
+          <div>
+            <p class="timeline-body-title">The First Atelier</p>
+            <p class="timeline-body-text">Édouard Renard opens at 14, Rue de Rive with three apprentices and a lathe from Glashütte.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal reveal-delay-1">
+          <div class="timeline-year">1903</div>
+          <div>
+            <p class="timeline-body-title">First In-House Calibre</p>
+            <p class="timeline-body-text">Calibre ER-01, a pocket watch movement with 196 components, wins the Concours de Genève.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-year">1924</div>
+          <div>
+            <p class="timeline-body-title">Wristwatch Era</p>
+            <p class="timeline-body-text">The house pivots to wristwatches, producing the first Lac Léman reference for the King of Belgium.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal reveal-delay-1">
+          <div class="timeline-year">1962</div>
+          <div>
+            <p class="timeline-body-title">Tourbillon Mastery</p>
+            <p class="timeline-body-text">Master Horologist René Favre completes a 14-year project: the first Template Watches flying tourbillon.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-year">1987</div>
+          <div>
+            <p class="timeline-body-title">Centennial Collection</p>
+            <p class="timeline-body-text">100 pieces celebrating a century. Every one sold within 48 hours at the Geneva Salon.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal reveal-delay-1">
+          <div class="timeline-year">2019</div>
+          <div>
+            <p class="timeline-body-title">Geneva Seal Certification</p>
+            <p class="timeline-body-text">All movements receive the Poinçon de Genève, the strictest quality standard in watchmaking.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-year">2025</div>
+          <div>
+            <p class="timeline-body-title">A New Chapter</p>
+            <p class="timeline-body-text">The current collection introduces three new references, each assembled by one of our twelve remaining master horologists.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       BRAND STATS STRIP
+  ════════════════════════════════════════ -->
+  <div class="stats-strip" aria-label="Brand statistics">
+    <div class="stats-strip-inner">
+      <div class="stats-strip-item">
+        <span class="stats-strip-num">137</span>
+        <span class="stats-strip-label">Years of Swiss Heritage</span>
+      </div>
+      <div class="stats-strip-item">
+        <span class="stats-strip-num">248</span>
+        <span class="stats-strip-label">Individual Components</span>
+      </div>
+      <div class="stats-strip-item">
+        <span class="stats-strip-num">6,200+</span>
+        <span class="stats-strip-label">Hours of Training per Horologist</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       NEWSLETTER / FINAL CTA
+  ════════════════════════════════════════ -->
+  <div class="newsletter-section">
+    <div class="newsletter-bg" aria-hidden="true"></div>
+    <div class="newsletter-inner">
+      <div>
+        <p class="label reveal">Private Access</p>
+        <h2 class="nl-heading reveal reveal-delay-1">Join the<br /><em>Template Circle</em></h2>
+        <p class="nl-sub reveal reveal-delay-2">Be first to receive new references, private salon invitations in Geneva, and access to limited atelier editions — never more than 50 pieces.</p>
+      </div>
+      <form class="nl-form reveal reveal-delay-1" onsubmit="return false;">
+        <div class="nl-input-row">
+          <input class="nl-input" type="text" placeholder="Your name" aria-label="Your name" />
+        </div>
+        <div class="nl-input-row">
+          <input class="nl-input" type="email" placeholder="your@email.com" aria-label="Email address" />
+          <button class="nl-submit" type="submit">Apply</button>
+        </div>
+        <p class="nl-note">By applying you agree to our privacy policy. We share nothing and write rarely.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <p class="footer-brand-name">Template Watches</p>
+          <p class="footer-brand-tagline">Handcrafted timepieces from our atelier in Geneva, Switzerland. Precision since 1887.</p>
+          <div class="footer-social">
+            <a class="footer-social-link" href="#" aria-label="Instagram">Ig</a>
+            <a class="footer-social-link" href="#" aria-label="X / Twitter">X</a>
+            <a class="footer-social-link" href="#" aria-label="LinkedIn">Li</a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-col-title">Collection</p>
+          <ul class="footer-links">
+            <li><a href="collection/lac-leman.html">Lac Léman</a></li>
+            <li><a href="collection/rhone-tourbillon.html">Rhône Tourbillon</a></li>
+            <li><a href="collection/mont-blanc-chrono.html">Mont Blanc Chrono</a></li>
+            <li><a href="collection/grand-feu-enamel.html">Grand Feu Enamel</a></li>
+            <li><a href="collection/complications.html">Complications</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Maison</p>
+          <ul class="footer-links">
+            <li><a href="heritage.html">Our Heritage</a></li>
+            <li><a href="maison/atelier.html">The Atelier</a></li>
+            <li><a href="craftsmanship.html">Craftsmanship</a></li>
+            <li><a href="maison/bespoke.html">Bespoke</a></li>
+            <li><a href="maison/press.html">Press</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Services</p>
+          <ul class="footer-links">
+            <li><a href="services/private-appointment.html">Private Appointment</a></li>
+            <li><a href="services/after-sales.html">After-Sales</a></li>
+            <li><a href="services/certification.html">Certification</a></li>
+            <li><a href="services/contact.html">Contact Geneva</a></li>
+          </ul>
+          <div style="margin-top:2.5rem;">
+            <p class="footer-col-title">Geneva Atelier</p>
+            <p style="font-size:.8125rem;color:var(--warm-gray);line-height:1.7;">14, Rue de Rive<br />1204 Genève<br />Switzerland<br /><br />+41 22 310 00 00</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Template Watches SA · All rights reserved · Geneva, Switzerland</p>
+        <div class="footer-geneva">
+          <span class="footer-geneva-dot" aria-hidden="true"></span>
+          Assembled in Geneva · Certified Swiss Made
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

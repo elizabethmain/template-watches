@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Private Appointment — Template Watches</title>
+  <meta name="description" content="Request a private viewing at our Geneva atelier. Template Watches receives guests by appointment only for a curated, unhurried experience." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .page-hero-thin { position:relative; height:clamp(420px,55vh,560px); overflow:hidden; }
+    .page-hero-bg { position:absolute; inset:0; background-size:cover; background-position:center; }
+    .page-hero-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(12,11,9,.88) 0%, rgba(12,11,9,.35) 60%, transparent 100%); }
+    .page-hero-content { position:absolute; bottom:0; left:0; right:0; z-index:2; padding:clamp(2rem,4vw,3.5rem) var(--gutter); max-width:var(--max); margin:0 auto; }
+    .page-hero-eyebrow { display:flex; align-items:center; gap:1rem; margin-bottom:.75rem; }
+    .page-hero-title { font-family:var(--serif); font-size:clamp(3rem,6vw,5.5rem); font-weight:300; color:var(--ivory); line-height:1.02; letter-spacing:-.02em; }
+    .page-hero-title em { font-style:italic; color:var(--gold-light); }
+
+    .service-well { max-width:860px; margin:0 auto; padding:clamp(4rem,8vw,8rem) var(--gutter); }
+    .service-intro { font-family:var(--serif); font-size:clamp(1.125rem,2vw,1.5rem); font-weight:300; font-style:italic; color:var(--mid); line-height:1.6; margin-bottom:3rem; }
+    .service-body { font-size:.9375rem; color:var(--mid); line-height:1.85; margin-bottom:2rem; }
+    .service-form { display:flex; flex-direction:column; gap:1.25rem; }
+    .service-form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .service-label { font-family:var(--mono); font-size:.5625rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gold-dim); display:block; margin-bottom:.5rem; }
+    .service-input {
+      width:100%; background:rgba(12,11,9,.04); border:1px solid var(--ink-12);
+      border-radius:2px; padding:.875rem 1.25rem;
+      font-family:var(--sans); font-size:.9375rem; color:var(--ink); outline:none;
+      transition:border-color .3s;
+    }
+    .service-input:focus { border-color:var(--gold); }
+    .service-input::placeholder { color:var(--ink-40); }
+    textarea.service-input { resize:vertical; min-height:140px; }
+    .service-submit {
+      align-self:flex-start; background:var(--gold); color:var(--ink);
+      border:none; border-radius:2px; padding:.9rem 2.5rem;
+      font-family:var(--mono); font-size:.6875rem; letter-spacing:.18em; text-transform:uppercase;
+      cursor:pointer; transition:background .3s;
+    }
+    .service-submit:hover { background:var(--gold-light); }
+    .assurance-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--ink-12); }
+    .assurance-cell { background:var(--ivory); padding:2.5rem var(--gutter); text-align:center; }
+    .assurance-icon { font-family:var(--serif); font-size:1.5rem; font-style:italic; color:var(--gold-dim); margin-bottom:.75rem; }
+    .assurance-title { font-family:var(--mono); font-size:.8125rem; letter-spacing:.16em; text-transform:uppercase; color:var(--ink); margin-bottom:.5rem; }
+    .assurance-desc { font-family:var(--serif); font-size:1.125rem; font-style:italic; color:var(--mid); }
+    .return-link-strip { text-align:center; padding:3rem var(--gutter); }
+    .return-link { font-family:var(--mono); font-size:.6875rem; letter-spacing:.16em; text-transform:uppercase; color:var(--gold-dim); border-bottom:1px solid rgba(122,100,64,.3); padding-bottom:2px; transition:color .3s, border-color .3s; }
+    .return-link:hover { color:var(--gold); border-color:var(--gold); }
+    @media(max-width:768px) { .service-form-row { grid-template-columns:1fr; } .assurance-strip { grid-template-columns:1fr; } .service-submit { width:100%; } }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&#215;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="../collection.html" class="mobile-menu-link">Collection</a></li>
+      <li><a href="../heritage.html" class="mobile-menu-link">Heritage</a></li>
+      <li><a href="../craftsmanship.html" class="mobile-menu-link">Craftsmanship</a></li>
+      <li><a href="../geneva.html" class="mobile-menu-link">Geneva</a></li>
+    </ul>
+    <a href="#appointment-form" class="mobile-nav-cta mobile-menu-link">Request Appointment <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+    <p class="mobile-menu-footer">Geneva · Switzerland · Est. 1887</p>
+  </div>
+
+  <nav id="nav" role="navigation" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo">Template Watches</a>
+    <ul class="nav-links">
+      <li><a href="../collection.html">Collection</a></li>
+      <li><a href="../heritage.html">Heritage</a></li>
+      <li><a href="../craftsmanship.html">Craftsmanship</a></li>
+      <li><a href="../geneva.html">Geneva</a></li>
+    </ul>
+    <a href="#appointment-form" class="nav-cta">Request Appointment</a>
+    <div class="nav-hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
+  </nav>
+
+  <section class="page-hero-thin">
+    <div class="page-hero-bg" style="background-image:url('../images/1506905925346.jpg');"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <div class="page-hero-eyebrow">
+        <span class="eyebrow-text">Services</span>
+      </div>
+      <h1 class="page-hero-title">Request a<br/><em>Private Viewing</em></h1>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+  <main>
+    <div id="appointment-form" class="service-well">
+      <p class="service-intro">Our Geneva atelier receives guests by private appointment only. Whether you are considering your first Template Watch or returning to commission a bespoke piece, we will prepare a curated selection for your visit.</p>
+
+      <p class="service-body">Each appointment is arranged personally by our atelier team and tailored entirely to your interests. You will be welcomed into a private salon, where a master horologist will guide you through our current collection and, should you wish, discuss the possibilities of a bespoke commission. Appointments typically last between 60 and 90 minutes, and we ask for at least five working days' notice to ensure full preparation.</p>
+
+      <form class="service-form" action="#" method="post" novalidate>
+        <div class="service-form-row">
+          <div>
+            <label class="service-label" for="first-name">First Name</label>
+            <input class="service-input" type="text" id="first-name" name="first_name" placeholder="Jean" autocomplete="given-name" required />
+          </div>
+          <div>
+            <label class="service-label" for="last-name">Last Name</label>
+            <input class="service-input" type="text" id="last-name" name="last_name" placeholder="Dupont" autocomplete="family-name" required />
+          </div>
+        </div>
+
+        <div class="service-form-row">
+          <div>
+            <label class="service-label" for="email">Email</label>
+            <input class="service-input" type="email" id="email" name="email" placeholder="your@email.com" autocomplete="email" required />
+          </div>
+          <div>
+            <label class="service-label" for="phone">Phone</label>
+            <input class="service-input" type="tel" id="phone" name="phone" placeholder="+41 ..." autocomplete="tel" />
+          </div>
+        </div>
+
+        <div>
+          <label class="service-label" for="preferred-date">Preferred Date</label>
+          <input class="service-input" type="text" id="preferred-date" name="preferred_date" placeholder="e.g. April 2025 — any day" />
+        </div>
+
+        <div>
+          <label class="service-label" for="reference">Which Reference</label>
+          <input class="service-input" type="text" id="reference" name="reference" placeholder="Lac Léman, Rhône Tourbillon, Bespoke commission..." />
+        </div>
+
+        <div>
+          <label class="service-label" for="message">Message</label>
+          <textarea class="service-input" id="message" name="message" placeholder="Any additional context or questions"></textarea>
+        </div>
+
+        <button type="submit" class="service-submit">Request Appointment</button>
+      </form>
+    </div>
+
+    <div class="assurance-strip">
+      <div class="assurance-cell">
+        <div class="assurance-icon">D</div>
+        <p class="assurance-title">Discrete &amp; Confidential</p>
+        <p class="assurance-desc">All appointments are handled with complete privacy and discretion.</p>
+      </div>
+      <div class="assurance-cell">
+        <div class="assurance-icon">G</div>
+        <p class="assurance-title">Geneva Certified</p>
+        <p class="assurance-desc">Every piece shown carries the authentic Poinçon de Genève hallmark.</p>
+      </div>
+      <div class="assurance-cell">
+        <div class="assurance-icon">M</div>
+        <p class="assurance-title">Master Horologist Response</p>
+        <p class="assurance-desc">Your request is reviewed personally by a senior member of our atelier.</p>
+      </div>
+    </div>
+
+    <div class="return-link-strip">
+      <a href="../collection.html" class="return-link">← Back to Collection</a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <p class="footer-brand-name">Template Watches</p>
+          <p class="footer-brand-tagline">Handcrafted timepieces from our atelier in Geneva, Switzerland. Precision since 1887.</p>
+          <div class="footer-social">
+            <a class="footer-social-link" href="#" aria-label="Instagram">Ig</a>
+            <a class="footer-social-link" href="#" aria-label="X / Twitter">X</a>
+            <a class="footer-social-link" href="#" aria-label="LinkedIn">Li</a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-col-title">Collection</p>
+          <ul class="footer-links">
+            <li><a href="../collection/lac-leman.html">Lac Léman</a></li>
+            <li><a href="../collection/rhone-tourbillon.html">Rhône Tourbillon</a></li>
+            <li><a href="../collection/mont-blanc-chrono.html">Mont Blanc Chrono</a></li>
+            <li><a href="../collection/grand-feu-enamel.html">Grand Feu Enamel</a></li>
+            <li><a href="../collection/complications.html">Complications</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Maison</p>
+          <ul class="footer-links">
+            <li><a href="../heritage.html">Our Heritage</a></li>
+            <li><a href="../maison/atelier.html">The Atelier</a></li>
+            <li><a href="../craftsmanship.html">Craftsmanship</a></li>
+            <li><a href="../maison/bespoke.html">Bespoke</a></li>
+            <li><a href="../maison/press.html">Press</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Services</p>
+          <ul class="footer-links">
+            <li><a href="private-appointment.html">Private Appointment</a></li>
+            <li><a href="after-sales.html">After-Sales</a></li>
+            <li><a href="certification.html">Certification</a></li>
+            <li><a href="contact.html">Contact Geneva</a></li>
+          </ul>
+          <div style="margin-top:2.5rem;">
+            <p class="footer-col-title">Geneva Atelier</p>
+            <p style="font-size:.8125rem;color:var(--warm-gray);line-height:1.7;">14, Rue de Rive<br />1204 Genève<br />Switzerland<br /><br />+41 22 310 00 00</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Template Watches SA · All rights reserved · Geneva, Switzerland</p>
+        <div class="footer-geneva"><span class="footer-geneva-dot" aria-hidden="true"></span>Assembled in Geneva · Certified Swiss Made</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../main.js"></script>
+  <script>
+    (function () {
+      var ref = new URLSearchParams(window.location.search).get('ref');
+      if (ref) {
+        var field = document.getElementById('reference');
+        if (field) {
+          field.value = ref;
+          field.style.borderColor = 'var(--gold)';
+          setTimeout(function () { field.style.borderColor = ''; }, 2000);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

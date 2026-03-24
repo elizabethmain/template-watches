@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bespoke — Template Watches</title>
+  <meta name="description" content="Commission a unique Template Watch. Work with our master horologists over six to eighteen months to create a timepiece that belongs to no one else." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    /* PAGE HERO */
+    .page-hero { position:relative; height:clamp(320px,45vh,520px); display:flex; align-items:flex-end; overflow:hidden; }
+    .page-hero-bg { position:absolute; inset:0; background-size:cover; background-position:center; }
+    .page-hero-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(12,11,9,.85) 0%, rgba(12,11,9,.3) 60%, rgba(12,11,9,.5) 100%); }
+    .page-hero-content { position:relative; z-index:2; padding:clamp(2rem,4vw,4rem) var(--gutter); width:100%; max-width:var(--max); margin:0 auto; }
+    .page-hero-eyebrow { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; }
+    .page-hero-title { font-family:var(--serif); font-size:clamp(2.5rem,6vw,5.5rem); font-weight:300; color:var(--ivory); line-height:1; letter-spacing:-.01em; }
+    .page-hero-title em { font-style:italic; color:var(--gold-light); }
+
+    /* BESPOKE-SPECIFIC */
+    .bespoke-steps { display:flex; flex-direction:column; }
+    .bespoke-step {
+      display:grid; grid-template-columns:1fr 1fr;
+      min-height:clamp(300px,40vh,500px);
+    }
+    .bespoke-step:nth-child(even) .bespoke-step-image { order:2; }
+    .bespoke-step:nth-child(even) .bespoke-step-content { order:1; }
+    .bespoke-step-image { position:relative; overflow:hidden; }
+    .bespoke-step-image img { height:100%; width:100%; object-fit:cover; }
+    .bespoke-step-content {
+      background:var(--ink); padding:clamp(3rem,6vw,6rem);
+      display:flex; flex-direction:column; justify-content:center;
+    }
+    .bespoke-step-num { font-family:var(--serif); font-size:4rem; font-weight:300; color:var(--gold-dim); opacity:.3; line-height:1; margin-bottom:1rem; }
+    .bespoke-step-title { font-family:var(--serif); font-size:clamp(1.5rem,2.5vw,2.25rem); font-weight:300; color:var(--ivory); margin-bottom:1rem; line-height:1.2; }
+    .bespoke-step-title em { font-style:italic; color:var(--gold-light); }
+    .bespoke-step-text { font-size:.9375rem; color:var(--warm-gray); line-height:1.85; max-width:420px; }
+    @media(max-width:768px) {
+      .bespoke-step { grid-template-columns:1fr; }
+      .bespoke-step:nth-child(even) .bespoke-step-image { order:0; }
+      .bespoke-step:nth-child(even) .bespoke-step-content { order:1; }
+      .bespoke-step-image { min-height:56vw; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&#215;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="../collection.html" class="mobile-menu-link">Collection</a></li>
+      <li><a href="../heritage.html" class="mobile-menu-link">Heritage</a></li>
+      <li><a href="../craftsmanship.html" class="mobile-menu-link">Craftsmanship</a></li>
+      <li><a href="../geneva.html" class="mobile-menu-link">Geneva</a></li>
+    </ul>
+    <a href="../services/private-appointment.html" class="mobile-nav-cta mobile-menu-link">Request Appointment <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+    <p class="mobile-menu-footer">Geneva · Switzerland · Est. 1887</p>
+  </div>
+
+  <nav id="nav" role="navigation" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo">Template Watches</a>
+    <ul class="nav-links">
+      <li><a href="../collection.html">Collection</a></li>
+      <li><a href="../heritage.html">Heritage</a></li>
+      <li><a href="../craftsmanship.html">Craftsmanship</a></li>
+      <li><a href="../geneva.html">Geneva</a></li>
+    </ul>
+    <a href="../services/private-appointment.html" class="nav-cta">Request Appointment</a>
+    <div class="nav-hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <div class="page-hero-bg" aria-hidden="true">
+      <img
+        src="../images/1558618666.jpg"
+        srcset="../images/1558618666.jpg 640w,
+                ../images/1558618666.jpg 1024w,
+                ../images/1558618666.jpg 1400w"
+        sizes="100vw"
+        alt="Close detail of a bespoke watch being crafted at Template Watches"
+        style="width:100%;height:100%;object-fit:cover;"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <div class="page-hero-eyebrow">
+        <span class="label" style="color:var(--gold);">Bespoke</span>
+      </div>
+      <h1 class="page-hero-title">Your vision,<br/>our<br/><em>craftsmanship</em></h1>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+  <!-- INTRO TEXT -->
+  <section style="padding:clamp(4rem,8vw,8rem) var(--gutter);max-width:680px;margin:0 auto;text-align:center;">
+    <p class="reveal" style="font-family:var(--serif);font-size:clamp(1.125rem,1.75vw,1.375rem);font-style:italic;font-weight:300;color:var(--ivory);line-height:1.75;">
+      Every Template Watch can be commissioned as a unique piece. From dial colour to case metal to strap leather, our master horologists will work with you over six to eighteen months to create a timepiece that belongs to no one else.
+    </p>
+  </section>
+
+  <!-- BESPOKE STEPS -->
+  <div class="bespoke-steps">
+
+    <!-- Step 01: The Consultation -->
+    <div class="bespoke-step">
+      <div class="bespoke-step-image">
+        <img
+          src="../images/1506905925346.jpg"
+          srcset="../images/1506905925346.jpg 400w,
+                  ../images/1506905925346.jpg 700w,
+                  ../images/1506905925346.jpg 1050w"
+          sizes="(max-width:768px) 100vw, 50vw"
+          alt="Private consultation at the Template Watches Geneva atelier"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="bespoke-step-content">
+        <div class="bespoke-step-num">01</div>
+        <h2 class="bespoke-step-title">The Consultation</h2>
+        <p class="bespoke-step-text">We begin with a private appointment at our Geneva atelier or at one of our partner salons. You will meet your assigned master horologist and discuss the brief — from movement type to case dimensions.</p>
+      </div>
+    </div>
+
+    <!-- Step 02: Design & Sketching -->
+    <div class="bespoke-step">
+      <div class="bespoke-step-image">
+        <img
+          src="../images/1523275335684.jpg"
+          srcset="../images/1523275335684.jpg 400w,
+                  ../images/1523275335684.jpg 700w,
+                  ../images/1523275335684.jpg 1050w"
+          sizes="(max-width:768px) 100vw, 50vw"
+          alt="Watch design sketches and wax models in development"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="bespoke-step-content">
+        <div class="bespoke-step-num">02</div>
+        <h2 class="bespoke-step-title">Design &amp; <em>Sketching</em></h2>
+        <p class="bespoke-step-text">Over 4–8 weeks, our design team produces hand-drawn sketches and wax models. You will review two to three distinct directions before approving the final design.</p>
+      </div>
+    </div>
+
+    <!-- Step 03: Manufacture -->
+    <div class="bespoke-step">
+      <div class="bespoke-step-image">
+        <img
+          src="../images/1491555103944.jpg"
+          srcset="../images/1491555103944.jpg 400w,
+                  ../images/1491555103944.jpg 700w,
+                  ../images/1491555103944.jpg 1050w"
+          sizes="(max-width:768px) 100vw, 50vw"
+          alt="Master horologist assembling a bespoke movement at the atelier bench"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="bespoke-step-content">
+        <div class="bespoke-step-num">03</div>
+        <h2 class="bespoke-step-title"><em>Manufacture</em></h2>
+        <p class="bespoke-step-text">Your movement is assigned to a single master horologist who will assemble every component from first to last, signing the caseback upon completion.</p>
+      </div>
+    </div>
+
+    <!-- Step 04: Delivery -->
+    <div class="bespoke-step">
+      <div class="bespoke-step-image">
+        <img
+          src="../images/1559827291.jpg"
+          srcset="../images/1559827291.jpg 400w,
+                  ../images/1559827291.jpg 700w,
+                  ../images/1559827291.jpg 1050w"
+          sizes="(max-width:768px) 100vw, 50vw"
+          alt="Template Watches signature rosewood presentation box and certificate"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="bespoke-step-content">
+        <div class="bespoke-step-num">04</div>
+        <h2 class="bespoke-step-title"><em>Delivery</em></h2>
+        <p class="bespoke-step-text">Your piece arrives in our signature rosewood presentation box, accompanied by a hand-signed certificate, spare strap, and a personal letter from your horologist.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CTA SECTION -->
+  <section style="background:var(--ink);padding:clamp(5rem,10vw,10rem) var(--gutter);text-align:center;">
+    <p class="label reveal" style="margin-bottom:1.5rem;">Commission</p>
+    <h2 class="reveal reveal-delay-1" style="font-family:var(--serif);font-size:clamp(2rem,4vw,3.5rem);font-weight:300;color:var(--ivory);line-height:1.1;letter-spacing:-.01em;margin-bottom:1.25rem;">Begin your commission</h2>
+    <p class="reveal reveal-delay-2" style="font-size:.9375rem;color:var(--warm-gray);line-height:1.75;max-width:520px;margin:0 auto 2.5rem;">Bespoke commissions start at CHF 85,000 and require 6–18 months.</p>
+    <a href="../services/private-appointment.html" class="reveal reveal-delay-3" style="display:inline-flex;align-items:center;gap:.75rem;font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ivory);border:1px solid var(--gold-dim);padding:.9rem 2rem;border-radius:2px;text-decoration:none;transition:background .3s,color .3s;">
+      Request a Consultation
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </a>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <div class="newsletter-section">
+    <div class="newsletter-bg" aria-hidden="true"></div>
+    <div class="newsletter-inner">
+      <div>
+        <p class="label reveal">Private Access</p>
+        <h2 class="nl-heading reveal reveal-delay-1">Join the<br /><em>Template Circle</em></h2>
+        <p class="nl-sub reveal reveal-delay-2">Be first to receive new references, private salon invitations in Geneva, and access to limited atelier editions — never more than 50 pieces.</p>
+      </div>
+      <form class="nl-form reveal reveal-delay-1" onsubmit="return false;">
+        <div class="nl-input-row"><input class="nl-input" type="text" placeholder="Your name" aria-label="Your name" /></div>
+        <div class="nl-input-row">
+          <input class="nl-input" type="email" placeholder="your@email.com" aria-label="Email address" />
+          <button class="nl-submit" type="submit">Apply</button>
+        </div>
+        <p class="nl-note">By applying you agree to our privacy policy. We share nothing and write rarely.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <p class="footer-brand-name">Template Watches</p>
+          <p class="footer-brand-tagline">Handcrafted timepieces from our atelier in Geneva, Switzerland. Precision since 1887.</p>
+          <div class="footer-social">
+            <a class="footer-social-link" href="#" aria-label="Instagram">Ig</a>
+            <a class="footer-social-link" href="#" aria-label="X / Twitter">X</a>
+            <a class="footer-social-link" href="#" aria-label="LinkedIn">Li</a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-col-title">Collection</p>
+          <ul class="footer-links">
+            <li><a href="../collection/lac-leman.html">Lac Léman</a></li>
+            <li><a href="../collection/rhone-tourbillon.html">Rhône Tourbillon</a></li>
+            <li><a href="../collection/mont-blanc-chrono.html">Mont Blanc Chrono</a></li>
+            <li><a href="../collection/grand-feu-enamel.html">Grand Feu Enamel</a></li>
+            <li><a href="../collection/complications.html">Complications</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Maison</p>
+          <ul class="footer-links">
+            <li><a href="../heritage.html">Our Heritage</a></li>
+            <li><a href="atelier.html">The Atelier</a></li>
+            <li><a href="../craftsmanship.html">Craftsmanship</a></li>
+            <li><a href="bespoke.html">Bespoke</a></li>
+            <li><a href="press.html">Press</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Services</p>
+          <ul class="footer-links">
+            <li><a href="../services/private-appointment.html">Private Appointment</a></li>
+            <li><a href="../services/after-sales.html">After-Sales</a></li>
+            <li><a href="../services/certification.html">Certification</a></li>
+            <li><a href="../services/contact.html">Contact Geneva</a></li>
+          </ul>
+          <div style="margin-top:2.5rem;">
+            <p class="footer-col-title">Geneva Atelier</p>
+            <p style="font-size:.8125rem;color:var(--warm-gray);line-height:1.7;">14, Rue de Rive<br />1204 Genève<br />Switzerland<br /><br />+41 22 310 00 00</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Template Watches SA · All rights reserved · Geneva, Switzerland</p>
+        <div class="footer-geneva"><span class="footer-geneva-dot" aria-hidden="true"></span>Assembled in Geneva · Certified Swiss Made</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../main.js"></script>
+</body>
+</html>

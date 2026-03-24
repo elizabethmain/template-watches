@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grand Feu Enamel — Template Watches</title>
+  <meta name="description" content="The Grand Feu Enamel: every dial fired at 800°C and hand-painted by Mme. Isabelle Chervet. No two pieces identical. Limited to 24 per year. CHF 46,500." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .product-stage {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 90vh;
+      margin-top: 0;
+      padding-top: 0;
+    }
+    .product-image-col {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--ink);
+    }
+    .product-image-col img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(.88) saturate(.9);
+    }
+    .product-image-ref {
+      position: absolute;
+      bottom: 2rem;
+      left: 2rem;
+      font-family: var(--mono);
+      font-size: .5625rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(247,244,238,.5);
+    }
+    .product-info-col {
+      padding: clamp(6rem,10vw,10rem) clamp(2rem,4vw,5rem) clamp(4rem,6vw,6rem);
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+    .product-eyebrow { display:flex; align-items:center; gap:1rem; }
+    .product-name {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem,5vw,4.5rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -.01em;
+    }
+    .product-name em { font-style:italic; color:var(--gold-dim); }
+    .product-price {
+      font-family: var(--serif);
+      font-size: 1.375rem;
+      font-style: italic;
+      color: var(--warm-gray);
+    }
+    .product-desc {
+      font-size: 1rem;
+      line-height: 1.85;
+      color: var(--mid);
+      max-width: 480px;
+    }
+    .product-divider { width:100%; height:1px; background:var(--ink-12); }
+    .specs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--ink-12);
+      border: 1px solid var(--ink-12);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .spec-cell {
+      background: var(--ivory);
+      padding: 1.25rem 1.5rem;
+    }
+    .spec-label { font-family:var(--mono); font-size:.5rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold-dim); margin-bottom:.4rem; }
+    .spec-value { font-family:var(--serif); font-size:1rem; font-weight:300; color:var(--ink); }
+    .product-cta-row { display:flex; gap:1rem; flex-wrap:wrap; }
+    .product-cta-primary {
+      display:inline-flex; align-items:center; gap:.75rem;
+      background:var(--gold); color:var(--ink);
+      font-family:var(--mono); font-size:.6875rem; letter-spacing:.18em; text-transform:uppercase;
+      padding:.9rem 2.25rem; border-radius:2px;
+      transition:background .3s;
+    }
+    .product-cta-primary:hover { background:var(--gold-light); }
+    .product-cta-ghost {
+      display:inline-flex; align-items:center; gap:.75rem;
+      color:var(--gold-dim); font-family:var(--mono); font-size:.6875rem; letter-spacing:.18em; text-transform:uppercase;
+      border-bottom:1px solid rgba(180,154,108,.3); padding-bottom:2px;
+      transition:color .3s, border-color .3s;
+    }
+    .product-cta-ghost:hover { color:var(--gold); border-color:var(--gold); }
+    .companion-section { background:var(--ink); padding:clamp(4rem,7vw,7rem) var(--gutter); }
+    .companion-inner { max-width:var(--max); margin:0 auto; }
+    .companion-heading { font-family:var(--serif); font-size:clamp(1.75rem,3vw,2.75rem); font-weight:300; color:var(--ivory); margin-bottom:clamp(2rem,4vw,4rem); }
+    .companion-heading em { font-style:italic; color:var(--gold-light); }
+    .appt-cta-strip {
+      background:var(--mid); padding:clamp(3rem,5vw,5rem) var(--gutter);
+      text-align:center;
+    }
+    .appt-cta-strip p { font-family:var(--mono); font-size:.6875rem; letter-spacing:.18em; text-transform:uppercase; color:var(--warm-gray); margin-bottom:1.5rem; }
+    .appt-cta-strip a {
+      display:inline-flex; align-items:center; gap:.75rem;
+      border:1px solid rgba(180,154,108,.4); color:var(--gold);
+      font-family:var(--mono); font-size:.6875rem; letter-spacing:.16em; text-transform:uppercase;
+      padding:.9rem 2.25rem; border-radius:2px;
+      transition:background .3s, color .3s, border-color .3s;
+    }
+    .appt-cta-strip a:hover { background:var(--gold); color:var(--ink); border-color:var(--gold); }
+    @media (max-width:1024px) {
+      .product-stage { grid-template-columns:1fr; min-height:auto; }
+      .product-image-col { position:relative; height:70vw; max-height:560px; }
+    }
+    @media (max-width:768px) {
+      .product-image-col { height:60vw; }
+      .product-info-col { padding:2.5rem 1.25rem; }
+      .specs-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&#215;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="../collection.html" class="mobile-menu-link">Collection</a></li>
+      <li><a href="../heritage.html" class="mobile-menu-link">Heritage</a></li>
+      <li><a href="../craftsmanship.html" class="mobile-menu-link">Craftsmanship</a></li>
+      <li><a href="../geneva.html" class="mobile-menu-link">Geneva</a></li>
+    </ul>
+    <a href="../services/private-appointment.html?ref=Grand+Feu+Enamel" class="mobile-nav-cta mobile-menu-link">Request Appointment <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+    <p class="mobile-menu-footer">Geneva · Switzerland · Est. 1887</p>
+  </div>
+
+  <nav id="nav" role="navigation" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo">Template Watches</a>
+    <ul class="nav-links">
+      <li><a href="../collection.html">Collection</a></li>
+      <li><a href="../heritage.html">Heritage</a></li>
+      <li><a href="../craftsmanship.html">Craftsmanship</a></li>
+      <li><a href="../geneva.html">Geneva</a></li>
+    </ul>
+    <a href="../services/private-appointment.html?ref=Grand+Feu+Enamel" class="nav-cta">Request Appointment</a>
+    <div class="nav-hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
+  </nav>
+
+  <!-- PRODUCT STAGE -->
+  <div class="product-stage">
+    <div class="product-image-col">
+      <img
+        src="../images/1558618666.jpg"
+        srcset="../images/1558618666.jpg 480w,
+                ../images/1558618666.jpg 900w,
+                ../images/1558618666.jpg 1400w"
+        sizes="(max-width: 1024px) 100vw, 50vw"
+        alt="Grand Feu Enamel — Template Watches hand-painted enamel dial in rose gold"
+        fetchpriority="high"
+        loading="eager"
+      />
+      <span class="product-image-ref">Ref. TW-22 · 2025</span>
+    </div>
+    <div class="product-info-col">
+      <div class="product-eyebrow reveal">
+        <span class="divider"></span>
+        <span class="label">Limited · 2025</span>
+      </div>
+      <div>
+        <h1 class="product-name reveal reveal-delay-1">Grand Feu <em>Enamel</em></h1>
+        <p class="product-price reveal reveal-delay-2">CHF 46,500</p>
+      </div>
+      <p class="product-desc reveal reveal-delay-2">The Grand Feu Enamel dial is fired at 800°C in our Geneva atelier, then hand-painted by our sole remaining grand feu enamel artisan, Mme. Isabelle Chervet. No two pieces are identical. Each dial takes three weeks to complete.</p>
+
+      <div class="product-divider reveal"></div>
+
+      <!-- SPECS -->
+      <div class="specs-grid reveal">
+        <div class="spec-cell">
+          <p class="spec-label">Movement</p>
+          <p class="spec-value">Self-winding</p>
+        </div>
+        <div class="spec-cell">
+          <p class="spec-label">Calibre</p>
+          <p class="spec-value">TW-09 (in-house)</p>
+        </div>
+        <div class="spec-cell">
+          <p class="spec-label">Case</p>
+          <p class="spec-value">18k rose gold 38mm</p>
+        </div>
+        <div class="spec-cell">
+          <p class="spec-label">Water Resistance</p>
+          <p class="spec-value">50m</p>
+        </div>
+        <div class="spec-cell">
+          <p class="spec-label">Power Reserve</p>
+          <p class="spec-value">72 hours</p>
+        </div>
+        <div class="spec-cell">
+          <p class="spec-label">Crystal</p>
+          <p class="spec-value">Sapphire AR-coated</p>
+        </div>
+        <div class="spec-cell">
+          <p class="spec-label">Dial</p>
+          <p class="spec-value">Grand feu enamel (unique)</p>
+        </div>
+        <div class="spec-cell">
+          <p class="spec-label">Limited To</p>
+          <p class="spec-value">24 pieces per year</p>
+        </div>
+      </div>
+
+      <div class="product-divider reveal"></div>
+
+      <!-- CRAFTSMANSHIP -->
+      <div class="reveal">
+        <p class="label" style="margin-bottom:1.25rem;">The Craft</p>
+        <p class="product-desc" style="margin-bottom:1.25rem;">The grand feu enamel process is among the most unforgiving techniques in decorative arts. The dial blank is first prepared by the application of a counter-enamel on the reverse — a stabilising layer that prevents warping during the subsequent firings. The decorative enamel is then applied in successive layers, each no thicker than 0.1mm, and fired individually at 800°C in a kiln calibrated to within two degrees. A single bubble, crack, or colour contamination at any stage requires that the entire dial be discarded. Of the blanks Mme. Chervet begins in any given month, fewer than half survive to completion.</p>
+        <p class="product-desc">Mme. Isabelle Chervet has practised grand feu enamel for thirty-one years, having trained under the late Geneva maître émailleur Henri Dunant. Her technique is distinguished by an unusually thin application of each colour layer, which produces a translucency in the finished dial that allows the white base enamel to glow through, creating the characteristic luminosity that no photographic reproduction fully captures. She signs each completed dial on the reverse using a needle-tipped instrument and a carbon black pigment fired in a final, low-temperature kiln pass — a signature that will endure for as long as the dial itself.</p>
+      </div>
+
+      <div class="product-cta-row reveal">
+        <a href="../services/private-appointment.html?ref=Grand+Feu+Enamel" class="product-cta-primary">
+          Request This Piece
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </a>
+        <a href="../collection/complications.html" class="product-cta-ghost">
+          Full Collection
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+  <!-- COMPANION WATCHES -->
+  <div class="companion-section">
+    <div class="companion-inner">
+      <h2 class="companion-heading reveal">From the <em>Same Atelier</em></h2>
+      <div class="collection-grid">
+        <article class="watch-card reveal">
+          <a href="../collection/rhone-tourbillon.html" class="watch-card-img-link">
+            <div class="watch-card-img">
+              <img
+                src="../images/1594534475808.jpg"
+                srcset="../images/1594534475808.jpg 400w,
+                        ../images/1594534475808.jpg 560w,
+                        ../images/1594534475808.jpg 800w"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                alt="Rhône Tourbillon — Template Watches flying tourbillon"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="watch-card-badge">Maison</span>
+            </div>
+          </a>
+          <div class="watch-card-body">
+            <p class="watch-card-ref">Ref. TW-07 · 2025</p>
+            <h3 class="watch-card-name">Rhône Tourbillon</h3>
+            <p class="watch-card-desc">Our crown jewel. A flying tourbillon at 6 o'clock, suspended within a skeletonised platinum case of 42mm.</p>
+            <div class="watch-card-footer">
+              <span class="watch-card-price">CHF 94,000</span>
+              <a href="../collection/rhone-tourbillon.html" class="watch-card-cta">Discover</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="watch-card reveal reveal-delay-1">
+          <a href="../collection/lac-leman.html" class="watch-card-img-link">
+            <div class="watch-card-img">
+              <img
+                src="../images/1523275335684.jpg"
+                srcset="../images/1523275335684.jpg 400w,
+                        ../images/1523275335684.jpg 560w,
+                        ../images/1523275335684.jpg 800w"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                alt="Lac Léman — Template Watches dress watch"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="watch-card-badge">New</span>
+            </div>
+          </a>
+          <div class="watch-card-body">
+            <p class="watch-card-ref">Ref. TW-01 · 2025</p>
+            <h3 class="watch-card-name">Lac Léman</h3>
+            <p class="watch-card-desc">A celebration of Geneva's iconic lake. Hand-guilloché silver dial with blued steel hands. Self-winding Calibre TW-09.</p>
+            <div class="watch-card-footer">
+              <span class="watch-card-price">CHF 18,400</span>
+              <a href="../collection/lac-leman.html" class="watch-card-cta">Discover</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPOINTMENT CTA -->
+  <div class="appt-cta-strip">
+    <p>Each Dial Hand-Painted by Mme. Isabelle Chervet</p>
+    <a href="../services/private-appointment.html?ref=Grand+Feu+Enamel">
+      Book a Private Appointment
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+
+  <!-- NEWSLETTER -->
+  <div class="newsletter-section">
+    <div class="newsletter-bg" aria-hidden="true"></div>
+    <div class="newsletter-inner">
+      <div>
+        <p class="label reveal">Private Access</p>
+        <h2 class="nl-heading reveal reveal-delay-1">Join the<br /><em>Template Circle</em></h2>
+        <p class="nl-sub reveal reveal-delay-2">Be first to receive new references, private salon invitations in Geneva, and access to limited atelier editions — never more than 50 pieces.</p>
+      </div>
+      <form class="nl-form reveal reveal-delay-1" onsubmit="return false;">
+        <div class="nl-input-row"><input class="nl-input" type="text" placeholder="Your name" aria-label="Your name" /></div>
+        <div class="nl-input-row">
+          <input class="nl-input" type="email" placeholder="your@email.com" aria-label="Email address" />
+          <button class="nl-submit" type="submit">Apply</button>
+        </div>
+        <p class="nl-note">By applying you agree to our privacy policy. We share nothing and write rarely.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <p class="footer-brand-name">Template Watches</p>
+          <p class="footer-brand-tagline">Handcrafted timepieces from our atelier in Geneva, Switzerland. Precision since 1887.</p>
+          <div class="footer-social">
+            <a class="footer-social-link" href="#" aria-label="Instagram">Ig</a>
+            <a class="footer-social-link" href="#" aria-label="X / Twitter">X</a>
+            <a class="footer-social-link" href="#" aria-label="LinkedIn">Li</a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-col-title">Collection</p>
+          <ul class="footer-links">
+            <li><a href="../collection/lac-leman.html">Lac Léman</a></li>
+            <li><a href="../collection/rhone-tourbillon.html">Rhône Tourbillon</a></li>
+            <li><a href="../collection/mont-blanc-chrono.html">Mont Blanc Chrono</a></li>
+            <li><a href="../collection/grand-feu-enamel.html">Grand Feu Enamel</a></li>
+            <li><a href="../collection/complications.html">Complications</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Maison</p>
+          <ul class="footer-links">
+            <li><a href="../heritage.html">Our Heritage</a></li>
+            <li><a href="../maison/atelier.html">The Atelier</a></li>
+            <li><a href="../craftsmanship.html">Craftsmanship</a></li>
+            <li><a href="../maison/bespoke.html">Bespoke</a></li>
+            <li><a href="../maison/press.html">Press</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Services</p>
+          <ul class="footer-links">
+            <li><a href="../services/private-appointment.html">Private Appointment</a></li>
+            <li><a href="../services/after-sales.html">After-Sales</a></li>
+            <li><a href="../services/certification.html">Certification</a></li>
+            <li><a href="../services/contact.html">Contact Geneva</a></li>
+          </ul>
+          <div style="margin-top:2.5rem;">
+            <p class="footer-col-title">Geneva Atelier</p>
+            <p style="font-size:.8125rem;color:var(--warm-gray);line-height:1.7;">14, Rue de Rive<br />1204 Genève<br />Switzerland<br /><br />+41 22 310 00 00</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Template Watches SA · All rights reserved · Geneva, Switzerland</p>
+        <div class="footer-geneva"><span class="footer-geneva-dot" aria-hidden="true"></span>Assembled in Geneva · Certified Swiss Made</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../main.js"></script>
+</body>
+</html>

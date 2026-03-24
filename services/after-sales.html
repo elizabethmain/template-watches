@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>After-Sales Service — Template Watches</title>
+  <meta name="description" content="Lifetime service and care for every Template Watch. Submit a service request for routine maintenance, movement overhaul, or repairs at our Geneva atelier." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .page-hero-thin { position:relative; height:clamp(240px,30vh,340px); display:flex; align-items:flex-end; overflow:hidden; }
+    .page-hero-bg { position:absolute; inset:0; background-size:cover; background-position:center; }
+    .page-hero-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(12,11,9,.88) 0%, rgba(12,11,9,.4) 100%); }
+    .page-hero-content { position:relative; z-index:2; padding:clamp(1.5rem,3vw,3rem) var(--gutter); width:100%; max-width:var(--max); margin:0 auto; }
+    .page-hero-eyebrow { display:flex; align-items:center; gap:1rem; margin-bottom:.75rem; }
+    .page-hero-title { font-family:var(--serif); font-size:clamp(2rem,4.5vw,4rem); font-weight:300; color:var(--ivory); line-height:1.05; letter-spacing:-.01em; }
+    .page-hero-title em { font-style:italic; color:var(--gold-light); }
+
+    .service-well { max-width:860px; margin:0 auto; padding:clamp(4rem,8vw,8rem) var(--gutter); }
+    .service-intro { font-family:var(--serif); font-size:clamp(1.125rem,2vw,1.5rem); font-weight:300; font-style:italic; color:var(--mid); line-height:1.6; margin-bottom:3rem; }
+    .service-body { font-size:.9375rem; color:var(--warm-gray); line-height:1.85; margin-bottom:2rem; }
+    .service-form { display:flex; flex-direction:column; gap:1.25rem; }
+    .service-form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .service-label { font-family:var(--mono); font-size:.5625rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gold-dim); display:block; margin-bottom:.5rem; }
+    .service-input {
+      width:100%; background:rgba(12,11,9,.04); border:1px solid var(--ink-12);
+      border-radius:2px; padding:.875rem 1.25rem;
+      font-family:var(--sans); font-size:.9375rem; color:var(--ink); outline:none;
+      transition:border-color .3s;
+    }
+    .service-input:focus { border-color:var(--gold); }
+    .service-input::placeholder { color:var(--ink-40); }
+    textarea.service-input { resize:vertical; min-height:140px; }
+    select.service-input { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a08555' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 1.25rem center; padding-right:2.5rem; cursor:pointer; }
+    .service-submit {
+      align-self:flex-start; background:var(--gold); color:var(--ink);
+      border:none; border-radius:2px; padding:.9rem 2.5rem;
+      font-family:var(--mono); font-size:.6875rem; letter-spacing:.18em; text-transform:uppercase;
+      cursor:pointer; transition:background .3s;
+    }
+    .service-submit:hover { background:var(--gold-light); }
+    .assurance-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--ink-12); }
+    .assurance-cell { background:var(--ivory); padding:2.5rem var(--gutter); text-align:center; }
+    .assurance-icon { font-family:var(--serif); font-size:1.5rem; font-style:italic; color:var(--gold-dim); margin-bottom:.75rem; }
+    .assurance-title { font-family:var(--mono); font-size:.8125rem; letter-spacing:.16em; text-transform:uppercase; color:var(--ink); margin-bottom:.5rem; letter-spacing:.2em; text-transform:uppercase; color:var(--ink); margin-bottom:.5rem; }
+    .assurance-desc { font-family:var(--serif); font-size:1.125rem; font-style:italic; color:var(--mid); font-style:italic; color:var(--warm-gray); }
+    .return-link-strip { text-align:center; padding:3rem var(--gutter); }
+    .return-link { font-family:var(--mono); font-size:.6875rem; letter-spacing:.16em; text-transform:uppercase; color:var(--gold-dim); border-bottom:1px solid rgba(122,100,64,.3); padding-bottom:2px; transition:color .3s, border-color .3s; }
+    .return-link:hover { color:var(--gold); border-color:var(--gold); }
+    @media(max-width:768px) { .service-form-row { grid-template-columns:1fr; } .assurance-strip { grid-template-columns:1fr; } .service-submit { width:100%; } }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&#215;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="../collection.html" class="mobile-menu-link">Collection</a></li>
+      <li><a href="../heritage.html" class="mobile-menu-link">Heritage</a></li>
+      <li><a href="../craftsmanship.html" class="mobile-menu-link">Craftsmanship</a></li>
+      <li><a href="../geneva.html" class="mobile-menu-link">Geneva</a></li>
+    </ul>
+    <a href="private-appointment.html" class="mobile-nav-cta mobile-menu-link">Request Appointment <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+    <p class="mobile-menu-footer">Geneva · Switzerland · Est. 1887</p>
+  </div>
+
+  <nav id="nav" role="navigation" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo">Template Watches</a>
+    <ul class="nav-links">
+      <li><a href="../collection.html">Collection</a></li>
+      <li><a href="../heritage.html">Heritage</a></li>
+      <li><a href="../craftsmanship.html">Craftsmanship</a></li>
+      <li><a href="../geneva.html">Geneva</a></li>
+    </ul>
+    <a href="private-appointment.html" class="nav-cta">Request Appointment</a>
+    <div class="nav-hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
+  </nav>
+
+  <section class="page-hero-thin">
+    <div class="page-hero-bg" style="background-image:url('../images/1491555103944.jpg');"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <div class="page-hero-eyebrow">
+        <span class="eyebrow-text">Services</span>
+      </div>
+      <h1 class="page-hero-title">Lifetime<br/><em>service &amp; care</em></h1>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+  <main>
+    <div class="service-well">
+      <p class="service-intro">Every Template Watch comes with a lifetime service commitment. Whether your piece needs a routine service, a crystal replacement, or a full movement overhaul, our Geneva atelier is here.</p>
+
+      <p class="service-body">We recommend scheduling a full service every 5 to 7 years to maintain the precision and longevity of your movement. During a service, our watchmakers disassemble, clean, lubricate, and reassemble every component using only original Template Watches parts — never third-party substitutes. Genuine leather straps and all external components are inspected and replaced as necessary to restore your timepiece to its original condition.</p>
+
+      <form class="service-form" action="#" method="post" novalidate>
+        <div class="service-form-row">
+          <div>
+            <label class="service-label" for="first-name">First Name</label>
+            <input class="service-input" type="text" id="first-name" name="first_name" placeholder="Jean" autocomplete="given-name" required />
+          </div>
+          <div>
+            <label class="service-label" for="last-name">Last Name</label>
+            <input class="service-input" type="text" id="last-name" name="last_name" placeholder="Dupont" autocomplete="family-name" required />
+          </div>
+        </div>
+
+        <div class="service-form-row">
+          <div>
+            <label class="service-label" for="email">Email</label>
+            <input class="service-input" type="email" id="email" name="email" placeholder="your@email.com" autocomplete="email" required />
+          </div>
+          <div>
+            <label class="service-label" for="reference-number">Reference Number</label>
+            <input class="service-input" type="text" id="reference-number" name="reference_number" placeholder="e.g. TW-01-2025-0042" />
+          </div>
+        </div>
+
+        <div>
+          <label class="service-label" for="service-type">Service Type</label>
+          <select class="service-input" id="service-type" name="service_type" required>
+            <option value="" disabled selected>Select a service type</option>
+            <option value="routine">Routine Service</option>
+            <option value="crystal">Crystal Replacement</option>
+            <option value="strap">Strap Replacement</option>
+            <option value="overhaul">Movement Overhaul</option>
+            <option value="water">Water Resistance Test</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="service-label" for="issue">Describe Issue</label>
+          <textarea class="service-input" id="issue" name="issue" placeholder="Please describe the issue or service you require in as much detail as possible."></textarea>
+        </div>
+
+        <button type="submit" class="service-submit">Submit Service Request</button>
+      </form>
+    </div>
+
+    <div class="assurance-strip">
+      <div class="assurance-cell">
+        <div class="assurance-icon">O</div>
+        <p class="assurance-title">Original Parts Only</p>
+        <p class="assurance-desc">Every component used in servicing is sourced directly from our Geneva atelier.</p>
+      </div>
+      <div class="assurance-cell">
+        <div class="assurance-icon">G</div>
+        <p class="assurance-title">Geneva Atelier Work</p>
+        <p class="assurance-desc">All service work is performed in-house by our master watchmakers in Geneva.</p>
+      </div>
+      <div class="assurance-cell">
+        <div class="assurance-icon">W</div>
+        <p class="assurance-title">3-Year Service Warranty</p>
+        <p class="assurance-desc">Every completed service is covered by a three-year warranty on parts and labour.</p>
+      </div>
+    </div>
+
+    <div class="return-link-strip">
+      <a href="../collection.html" class="return-link">← Back to Collection</a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <p class="footer-brand-name">Template Watches</p>
+          <p class="footer-brand-tagline">Handcrafted timepieces from our atelier in Geneva, Switzerland. Precision since 1887.</p>
+          <div class="footer-social">
+            <a class="footer-social-link" href="#" aria-label="Instagram">Ig</a>
+            <a class="footer-social-link" href="#" aria-label="X / Twitter">X</a>
+            <a class="footer-social-link" href="#" aria-label="LinkedIn">Li</a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-col-title">Collection</p>
+          <ul class="footer-links">
+            <li><a href="../collection/lac-leman.html">Lac Léman</a></li>
+            <li><a href="../collection/rhone-tourbillon.html">Rhône Tourbillon</a></li>
+            <li><a href="../collection/mont-blanc-chrono.html">Mont Blanc Chrono</a></li>
+            <li><a href="../collection/grand-feu-enamel.html">Grand Feu Enamel</a></li>
+            <li><a href="../collection/complications.html">Complications</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Maison</p>
+          <ul class="footer-links">
+            <li><a href="../heritage.html">Our Heritage</a></li>
+            <li><a href="../maison/atelier.html">The Atelier</a></li>
+            <li><a href="../craftsmanship.html">Craftsmanship</a></li>
+            <li><a href="../maison/bespoke.html">Bespoke</a></li>
+            <li><a href="../maison/press.html">Press</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Services</p>
+          <ul class="footer-links">
+            <li><a href="private-appointment.html">Private Appointment</a></li>
+            <li><a href="after-sales.html">After-Sales</a></li>
+            <li><a href="certification.html">Certification</a></li>
+            <li><a href="contact.html">Contact Geneva</a></li>
+          </ul>
+          <div style="margin-top:2.5rem;">
+            <p class="footer-col-title">Geneva Atelier</p>
+            <p style="font-size:.8125rem;color:var(--warm-gray);line-height:1.7;">14, Rue de Rive<br />1204 Genève<br />Switzerland<br /><br />+41 22 310 00 00</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Template Watches SA · All rights reserved · Geneva, Switzerland</p>
+        <div class="footer-geneva"><span class="footer-geneva-dot" aria-hidden="true"></span>Assembled in Geneva · Certified Swiss Made</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../main.js"></script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Craftsmanship — Template Watches</title>
+  <meta name="description" content="Discover the art and process behind every Template Watch — from raw metal to a finished masterpiece, assembled by hand in our Geneva atelier." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    /* PAGE-SPECIFIC STYLES */
+    .page-hero { position:relative; height:clamp(320px,45vh,520px); display:flex; align-items:flex-end; overflow:hidden; }
+    .page-hero-bg { position:absolute; inset:0; background-size:cover; background-position:center; }
+    .page-hero-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(12,11,9,.85) 0%, rgba(12,11,9,.3) 60%, rgba(12,11,9,.5) 100%); }
+    .page-hero-content { position:relative; z-index:2; padding:clamp(2rem,4vw,4rem) var(--gutter); width:100%; max-width:var(--max); margin:0 auto; }
+    .page-hero-eyebrow { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; }
+    .page-hero-title { font-family:var(--serif); font-size:clamp(2.5rem,6vw,5.5rem); font-weight:300; color:var(--ivory); line-height:1; letter-spacing:-.01em; }
+    .page-hero-title em { font-style:italic; color:var(--gold-light); }
+
+    .process-steps { display:flex; flex-direction:column; gap:0; }
+    .process-step { display:grid; grid-template-columns:60px 1fr; gap:2.5rem; padding:3rem 0; border-bottom:1px solid var(--ink-12); align-items:start; }
+    .process-step:last-child { border-bottom:none; }
+    .process-step-num { font-family:var(--serif); font-size:3.5rem; font-weight:300; color:var(--gold-dim); line-height:1; opacity:.5; }
+    .process-step-title { font-family:var(--serif); font-size:1.5rem; font-weight:300; color:var(--ink); margin-bottom:.75rem; }
+    .process-step-title em { font-style:italic; color:var(--gold-dim); }
+    .process-step-text { font-size:.9375rem; color:var(--warm-gray); line-height:1.85; }
+    @media (max-width:768px) { .process-step { grid-template-columns:44px 1fr; gap:1.25rem; padding:2rem 0; } .process-step-num { font-size:2.5rem; } }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════
+       MOBILE MENU OVERLAY
+  ════════════════════════════════════════ -->
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&#215;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="../collection.html" class="mobile-menu-link">Collection</a></li>
+      <li><a href="../heritage.html" class="mobile-menu-link">Heritage</a></li>
+      <li><a href="../craftsmanship.html" class="mobile-menu-link">Craftsmanship</a></li>
+      <li><a href="../geneva.html" class="mobile-menu-link">Geneva</a></li>
+    </ul>
+    <a href="../services/private-appointment.html" class="mobile-nav-cta mobile-menu-link">Request Appointment <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+    <p class="mobile-menu-footer">Geneva · Switzerland · Est. 1887</p>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       NAVIGATION
+  ════════════════════════════════════════ -->
+  <nav id="nav" role="navigation" aria-label="Main navigation">
+    <a href="../index.html" class="nav-logo">Template Watches</a>
+    <ul class="nav-links">
+      <li><a href="../collection.html">Collection</a></li>
+      <li><a href="../heritage.html">Heritage</a></li>
+      <li><a href="../craftsmanship.html">Craftsmanship</a></li>
+      <li><a href="../geneva.html">Geneva</a></li>
+    </ul>
+    <a href="../services/private-appointment.html" class="nav-cta">Request Appointment</a>
+    <div class="nav-hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
+  </nav>
+
+  <!-- ════════════════════════════════════════
+       PAGE HERO
+  ════════════════════════════════════════ -->
+  <header class="page-hero" aria-label="Craftsmanship hero">
+    <div
+      class="page-hero-bg"
+      style="background-image:url('../images/1491555103944.jpg');"
+      role="img"
+      aria-label="Master horologist at work in the Geneva atelier"
+    ></div>
+    <div class="page-hero-overlay" aria-hidden="true"></div>
+    <div class="page-hero-content">
+      <div class="page-hero-eyebrow">
+        <span class="divider"></span>
+        <span class="label" style="color:var(--gold-dim);">Craftsmanship</span>
+      </div>
+      <h1 class="page-hero-title">
+        Every detail<br /><em>tells a story</em>
+      </h1>
+    </div>
+  </header>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+  <!-- ════════════════════════════════════════
+       BENTO GRID — EXPANDED
+  ════════════════════════════════════════ -->
+  <section class="bento-section" aria-label="Craftsmanship highlights">
+    <div class="section-label-row">
+      <p class="label reveal">The Details</p>
+      <span class="divider reveal reveal-delay-1"></span>
+    </div>
+    <h2 class="bento-heading reveal reveal-delay-1" style="margin-bottom:3rem;">
+      Precision at<br /><em>every scale</em>
+    </h2>
+    <div class="bento-grid">
+      <!-- 01 — In-house movement -->
+      <div class="bento-card bc-1 reveal">
+        <div class="bc-1-num">01</div>
+        <div>
+          <h3 class="bc-1-title">In-house<br /><em>movement</em></h3>
+          <p class="bc-1-body">Every Calibre is designed, engineered, and assembled entirely within our Geneva manufacture. Zero outsourced components. Zero compromises.</p>
+        </div>
+      </div>
+      <!-- 02 — Movement photo -->
+      <div class="bento-card bc-2 reveal reveal-delay-1">
+        <img
+          src="../images/1491555103944.jpg"
+          srcset="../images/1491555103944.jpg 360w,
+                  ../images/1491555103944.jpg 480w,
+                  ../images/1491555103944.jpg 700w"
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 34vw"
+          alt="Master horologist assembling a Template Watches movement under magnification"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <!-- 03 — Stat card -->
+      <div class="bento-card bc-3 reveal reveal-delay-2">
+        <p class="bc-3-label">Power Reserve</p>
+        <p class="bc-3-stat">72 hrs<br />minimum</p>
+      </div>
+      <!-- 04 — Case finishing -->
+      <div class="bento-card bc-4 reveal reveal-delay-1">
+        <div>
+          <p class="bc-4-label">Case Finishing</p>
+          <p class="bc-4-detail">Alternating satin &amp; mirror polish</p>
+        </div>
+        <p class="bc-4-subdetal">Every surface — bevelled, flanked, and brushed — is finished by a single artisan who signs the caseback upon completion.</p>
+      </div>
+      <!-- 05 — Luxury detail photo -->
+      <div class="bento-card bc-5 reveal reveal-delay-2">
+        <img
+          src="../images/1558618666.jpg"
+          srcset="../images/1558618666.jpg 360w,
+                  ../images/1558618666.jpg 480w,
+                  ../images/1558618666.jpg 700w"
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          alt="Fine detail of a Template Watches luxury timepiece"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <!-- 06 — Guillochage dark card -->
+      <div class="bento-card bc-1 reveal reveal-delay-3" style="background:var(--ink);color:var(--ivory);">
+        <div class="bc-1-num" style="color:var(--gold-dim);opacity:.7;">06</div>
+        <div>
+          <h3 class="bc-1-title" style="color:var(--ivory);">Guillochage<br /><em>hand engraving</em></h3>
+          <p class="bc-1-body" style="color:var(--warm-gray);">Our dial engravers use rose-engine lathes dating to 1923 to lay geometric patterns invisible to the naked eye. Each dial requires up to 14 hours of continuous, uninterrupted work.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       PROCESS STEPS
+  ════════════════════════════════════════ -->
+  <section aria-label="The craftsmanship process">
+    <div style="padding:clamp(4rem,8vw,9rem) var(--gutter); max-width:var(--max); margin:0 auto;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,6rem); align-items:start; margin-bottom:4rem;">
+        <div>
+          <p class="label reveal">The Process</p>
+          <div class="divider" style="display:block;margin:.75rem 0 2rem;"></div>
+          <h2 class="heritage-heading reveal reveal-delay-1">
+            From raw metal<br />to finished<br /><em>masterpiece</em>
+          </h2>
+        </div>
+        <div style="display:flex;align-items:flex-end;">
+          <p class="reveal reveal-delay-2" style="font-size:.9375rem;color:var(--warm-gray);line-height:1.85;">
+            Each Template Watch passes through the hands of specialists whose combined training spans decades. No step is rushed, no detail overlooked. This is the process that earns the Poinçon de Genève.
+          </p>
+        </div>
+      </div>
+      <div class="process-steps">
+        <!-- Step 01 -->
+        <div class="process-step reveal">
+          <div class="process-step-num">01</div>
+          <div>
+            <h3 class="process-step-title">Design &amp; <em>Engineering</em></h3>
+            <p class="process-step-text">Each new reference begins with months of sketching and CAD engineering at our Geneva manufacture. Our designers and engineers work in the same room, resolving aesthetic and mechanical constraints simultaneously — a practice that has defined Template Watches since 1887.</p>
+          </div>
+        </div>
+        <!-- Step 02 -->
+        <div class="process-step reveal reveal-delay-1">
+          <div class="process-step-num">02</div>
+          <div>
+            <h3 class="process-step-title">Movement <em>Assembly</em></h3>
+            <p class="process-step-text">Under 40× magnification, a single master horologist assembles every component of the Calibre by hand. Springs are tensioned, jewels are pressed, and escapements are regulated over the course of several days. Each movement is signed by its maker before casing.</p>
+          </div>
+        </div>
+        <!-- Step 03 -->
+        <div class="process-step reveal">
+          <div class="process-step-num">03</div>
+          <div>
+            <h3 class="process-step-title">Case <em>Finishing</em></h3>
+            <p class="process-step-text">Alternating satin and mirror polish surfaces are applied by hand. A single case takes 18 hours of polishing across multiple artisans, each responsible for a specific surface type. The contrast between the two finishes is what defines the Template silhouette.</p>
+          </div>
+        </div>
+        <!-- Step 04 -->
+        <div class="process-step reveal reveal-delay-1">
+          <div class="process-step-num">04</div>
+          <div>
+            <h3 class="process-step-title">Dial <em>Decoration</em></h3>
+            <p class="process-step-text">Our dials are crafted in Geneva using guillochage, grand feu enamel, or hand-applied Super-LumiNova depending on the reference. Enamel dials are fired at 850 °C multiple times to achieve depth and vibrancy unavailable through any other technique.</p>
+          </div>
+        </div>
+        <!-- Step 05 -->
+        <div class="process-step reveal">
+          <div class="process-step-num">05</div>
+          <div>
+            <h3 class="process-step-title">Quality <em>Control</em></h3>
+            <p class="process-step-text">Sixteen days of in-house testing. Every movement must pass COSC chronometer standards before casing, and then a further series of positional, thermal, and water-resistance tests specific to Template Watches' own benchmarks — which exceed COSC requirements.</p>
+          </div>
+        </div>
+        <!-- Step 06 -->
+        <div class="process-step reveal reveal-delay-1">
+          <div class="process-step-num">06</div>
+          <div>
+            <h3 class="process-step-title"><em>Certification</em></h3>
+            <p class="process-step-text">Each piece receives the Poinçon de Genève seal and a signed certification card from its maker — a tradition dating to our founding. The seal is not applied to the movement until it meets every criterion of the Geneva Seal's eleven quality standards without exception.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       IN-HOUSE PHILOSOPHY — FULL-BLEED SPLIT
+  ════════════════════════════════════════ -->
+  <div class="heritage section-full" aria-label="In-house philosophy">
+    <div class="heritage-image">
+      <img
+        src="../images/1491555103944.jpg"
+        srcset="../images/1491555103944.jpg 480w,
+                ../images/1491555103944.jpg 720w,
+                ../images/1491555103944.jpg 960w"
+        sizes="(max-width: 1024px) 100vw, 50vw"
+        alt="Horologist at a workbench in the Template Watches Geneva atelier"
+        loading="lazy"
+        decoding="async"
+      />
+      <span class="heritage-image-caption">Atelier Template · Geneva, 1887–present</span>
+    </div>
+    <div class="heritage-content">
+      <p class="label reveal">In-House Philosophy</p>
+      <h2 class="heritage-heading reveal reveal-delay-1">
+        Nothing<br /><em>leaves our hands<br />untouched</em>
+      </h2>
+      <p class="heritage-body reveal reveal-delay-2">
+        In an era of modular supply chains, Template Watches remains one of a small number of Geneva maisons that produces every component of its movements in-house — from the mainspring to the escapement wheel. We consider this not a marketing statement but an ethical commitment to the craft.
+        <br /><br />
+        Our manufacture occupies three floors on the Rue de Rive, housing design studios, a CNC atelier, a hand-finishing room, and a climate-controlled assembly hall where temperature is held within 0.5 °C year-round. Every watchmaker has trained for at least eight years before touching a Template movement.
+      </p>
+      <a href="../heritage.html" class="heritage-cta reveal reveal-delay-3">
+        Our Heritage
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       NEWSLETTER / FINAL CTA
+  ════════════════════════════════════════ -->
+  <div class="newsletter-section">
+    <div class="newsletter-bg" aria-hidden="true"></div>
+    <div class="newsletter-inner">
+      <div>
+        <p class="label reveal">Private Access</p>
+        <h2 class="nl-heading reveal reveal-delay-1">Join the<br /><em>Template Circle</em></h2>
+        <p class="nl-sub reveal reveal-delay-2">Be first to receive new references, private salon invitations in Geneva, and access to limited atelier editions — never more than 50 pieces.</p>
+      </div>
+      <form class="nl-form reveal reveal-delay-1" onsubmit="return false;">
+        <div class="nl-input-row"><input class="nl-input" type="text" placeholder="Your name" aria-label="Your name" /></div>
+        <div class="nl-input-row">
+          <input class="nl-input" type="email" placeholder="your@email.com" aria-label="Email address" />
+          <button class="nl-submit" type="submit">Apply</button>
+        </div>
+        <p class="nl-note">By applying you agree to our privacy policy. We share nothing and write rarely.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <p class="footer-brand-name">Template Watches</p>
+          <p class="footer-brand-tagline">Handcrafted timepieces from our atelier in Geneva, Switzerland. Precision since 1887.</p>
+          <div class="footer-social">
+            <a class="footer-social-link" href="#" aria-label="Instagram">Ig</a>
+            <a class="footer-social-link" href="#" aria-label="X / Twitter">X</a>
+            <a class="footer-social-link" href="#" aria-label="LinkedIn">Li</a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-col-title">Collection</p>
+          <ul class="footer-links">
+            <li><a href="../collection/lac-leman.html">Lac Léman</a></li>
+            <li><a href="../collection/rhone-tourbillon.html">Rhône Tourbillon</a></li>
+            <li><a href="../collection/mont-blanc-chrono.html">Mont Blanc Chrono</a></li>
+            <li><a href="../collection/grand-feu-enamel.html">Grand Feu Enamel</a></li>
+            <li><a href="../collection/complications.html">Complications</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Maison</p>
+          <ul class="footer-links">
+            <li><a href="../heritage.html">Our Heritage</a></li>
+            <li><a href="atelier.html">The Atelier</a></li>
+            <li><a href="../craftsmanship.html">Craftsmanship</a></li>
+            <li><a href="bespoke.html">Bespoke</a></li>
+            <li><a href="press.html">Press</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Services</p>
+          <ul class="footer-links">
+            <li><a href="../services/private-appointment.html">Private Appointment</a></li>
+            <li><a href="../services/after-sales.html">After-Sales</a></li>
+            <li><a href="../services/certification.html">Certification</a></li>
+            <li><a href="../services/contact.html">Contact Geneva</a></li>
+          </ul>
+          <div style="margin-top:2.5rem;">
+            <p class="footer-col-title">Geneva Atelier</p>
+            <p style="font-size:.8125rem;color:var(--warm-gray);line-height:1.7;">14, Rue de Rive<br />1204 Genève<br />Switzerland<br /><br />+41 22 310 00 00</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Template Watches SA · All rights reserved · Geneva, Switzerland</p>
+        <div class="footer-geneva"><span class="footer-geneva-dot" aria-hidden="true"></span>Assembled in Geneva · Certified Swiss Made</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../main.js"></script>
+</body>
+</html>

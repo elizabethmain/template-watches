@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geneva — Template Watches</title>
+  <meta name="description" content="Geneva — the world capital of precision timekeeping since the 16th century. Discover the city that shaped Template Watches and the art of Swiss horology." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* PAGE-SPECIFIC STYLES */
+    .page-hero { position:relative; height:clamp(320px,45vh,520px); display:flex; align-items:flex-end; overflow:hidden; }
+    .page-hero-bg { position:absolute; inset:0; background-size:cover; background-position:center; }
+    .page-hero-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(12,11,9,.85) 0%, rgba(12,11,9,.3) 60%, rgba(12,11,9,.5) 100%); }
+    .page-hero-content { position:relative; z-index:2; padding:clamp(2rem,4vw,4rem) var(--gutter); width:100%; max-width:var(--max); margin:0 auto; }
+    .page-hero-eyebrow { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; }
+    .page-hero-title { font-family:var(--serif); font-size:clamp(2.5rem,6vw,5.5rem); font-weight:300; color:var(--ivory); line-height:1; letter-spacing:-.01em; }
+    .page-hero-title em { font-style:italic; color:var(--gold-light); }
+
+    .city-grid { display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:auto auto; gap:1rem; }
+    .city-card { position:relative; overflow:hidden; border-radius:3px; }
+    .city-card img { height:100%; width:100%; object-fit:cover; transition:transform .8s var(--ease-expo); }
+    .city-card:hover img { transform:scale(1.04); }
+    .city-card-tall { grid-row:span 2; min-height:500px; }
+    .city-card-wide { grid-column:span 2; min-height:260px; }
+    .city-card-short { min-height:220px; }
+    .city-card-label { position:absolute; bottom:1.25rem; left:1.25rem; font-family:var(--mono); font-size:.5rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(247,244,238,.6); }
+    .geo-block { display:flex; align-items:center; gap:3rem; flex-wrap:wrap; padding:3rem var(--gutter); background:var(--ink); }
+    .geo-item { display:flex; flex-direction:column; gap:.35rem; }
+    .geo-label { font-family:var(--mono); font-size:.5625rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold-dim); }
+    .geo-value { font-family:var(--serif); font-size:1.25rem; font-weight:300; color:var(--ivory); }
+    @media(max-width:768px) { .city-grid { grid-template-columns:1fr 1fr; } .city-card-tall { grid-row:span 1; min-height:220px; } .city-card-wide { grid-column:span 2; } }
+    @media(max-width:480px) { .city-grid { grid-template-columns:1fr; } .city-card-wide,.city-card-tall { grid-column:1; grid-row:auto; } }
+
+    .stats-strip { display:flex; align-items:stretch; background:var(--ink); border-top:1px solid rgba(247,244,238,.06); }
+    .stats-strip-item { flex:1; padding:3rem clamp(1.5rem,3vw,3rem); border-right:1px solid rgba(247,244,238,.08); display:flex; flex-direction:column; gap:.75rem; }
+    .stats-strip-item:last-child { border-right:none; }
+    .stats-strip-num { font-family:var(--serif); font-size:clamp(2rem,4vw,3rem); font-weight:300; color:var(--gold-light); line-height:1; }
+    .stats-strip-label { font-family:var(--mono); font-size:.5625rem; letter-spacing:.2em; text-transform:uppercase; color:var(--warm-gray); }
+    @media(max-width:768px) { .stats-strip { flex-direction:column; } .stats-strip-item { border-right:none; border-bottom:1px solid rgba(247,244,238,.08); } .stats-strip-item:last-child { border-bottom:none; } }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════
+       MOBILE MENU OVERLAY
+  ════════════════════════════════════════ -->
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&#215;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="collection.html" class="mobile-menu-link">Collection</a></li>
+      <li><a href="heritage.html" class="mobile-menu-link">Heritage</a></li>
+      <li><a href="craftsmanship.html" class="mobile-menu-link">Craftsmanship</a></li>
+      <li><a href="geneva.html" class="mobile-menu-link">Geneva</a></li>
+    </ul>
+    <a href="services/private-appointment.html" class="mobile-nav-cta mobile-menu-link">Request Appointment <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+    <p class="mobile-menu-footer">Geneva · Switzerland · Est. 1887</p>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       NAVIGATION
+  ════════════════════════════════════════ -->
+  <nav id="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo">Template Watches</a>
+    <ul class="nav-links">
+      <li><a href="collection.html">Collection</a></li>
+      <li><a href="heritage.html">Heritage</a></li>
+      <li><a href="craftsmanship.html">Craftsmanship</a></li>
+      <li><a href="geneva.html">Geneva</a></li>
+    </ul>
+    <a href="services/private-appointment.html" class="nav-cta">Request Appointment</a>
+    <div class="nav-hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0"><span></span><span></span><span></span></div>
+  </nav>
+
+  <!-- ════════════════════════════════════════
+       PAGE HERO
+  ════════════════════════════════════════ -->
+  <header class="page-hero" aria-label="Geneva hero">
+    <div
+      class="page-hero-bg"
+      style="background-image:url('images/1559827291.jpg');"
+      role="img"
+      aria-label="Jet d'Eau on Lac Léman, Geneva"
+    ></div>
+    <div class="page-hero-overlay" aria-hidden="true"></div>
+    <div class="page-hero-content">
+      <div class="page-hero-eyebrow">
+        <span class="divider"></span>
+        <span class="label" style="color:var(--gold-dim);">The City</span>
+      </div>
+      <h1 class="page-hero-title">
+        Geneva —<br /><em>where precision<br />is a way of life</em>
+      </h1>
+    </div>
+  </header>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+  <!-- ════════════════════════════════════════
+       CITY PHOTO GRID
+  ════════════════════════════════════════ -->
+  <section aria-label="Geneva photo gallery">
+    <div style="padding:clamp(3rem,6vw,7rem) var(--gutter); max-width:var(--max); margin:0 auto;">
+      <div style="margin-bottom:2.5rem;">
+        <p class="label reveal">46.2044° N · 6.1432° E</p>
+        <div class="divider" style="display:block;margin:.75rem 0 0;"></div>
+      </div>
+      <div class="city-grid">
+        <!-- Tall card — row span 2 -->
+        <div class="city-card city-card-tall reveal">
+          <img
+            src="images/1559827291.jpg"
+            srcset="images/1559827291.jpg 360w,
+                    images/1559827291.jpg 500w,
+                    images/1559827291.jpg 700w"
+            sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 33vw"
+            alt="Jet d'Eau on Lac Léman, the iconic fountain of Geneva"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="city-card-label">Jet d'Eau · Lac Léman</span>
+        </div>
+        <!-- Wide card — col span 2 -->
+        <div class="city-card city-card-wide reveal reveal-delay-1">
+          <img
+            src="images/1563729784474.jpg"
+            srcset="images/1563729784474.jpg 480w,
+                    images/1563729784474.jpg 700w,
+                    images/1563729784474.jpg 960w"
+            sizes="(max-width: 480px) 100vw, (max-width: 768px) 100vw, 66vw"
+            alt="Vieille Ville — the historic old town of Geneva"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="city-card-label">Vieille Ville</span>
+        </div>
+        <!-- Short card -->
+        <div class="city-card city-card-short reveal reveal-delay-2">
+          <img
+            src="images/1531366936337.jpg"
+            srcset="images/1531366936337.jpg 320w,
+                    images/1531366936337.jpg 440w,
+                    images/1531366936337.jpg 620w"
+            sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 33vw"
+            alt="Mont Blanc Massif seen from Geneva"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="city-card-label">Mont Blanc Massif</span>
+        </div>
+        <!-- Short card -->
+        <div class="city-card city-card-short reveal reveal-delay-3">
+          <img
+            src="images/1491557345352.jpg"
+            srcset="images/1491557345352.jpg 320w,
+                    images/1491557345352.jpg 440w,
+                    images/1491557345352.jpg 620w"
+            sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 33vw"
+            alt="Quai du Rhône — Geneva waterfront at dusk"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="city-card-label">Quai du Rhône</span>
+        </div>
+        <!-- Wide card — col span 2, second row -->
+        <div class="city-card city-card-wide reveal reveal-delay-1">
+          <img
+            src="images/1506905925346.jpg"
+            srcset="images/1506905925346.jpg 480w,
+                    images/1506905925346.jpg 700w,
+                    images/1506905925346.jpg 960w"
+            sizes="(max-width: 480px) 100vw, (max-width: 768px) 100vw, 66vw"
+            alt="The Swiss Alps — the landscape that surrounds and inspires Geneva"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="city-card-label">Alpes Suisses</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       GEO COORDINATES BLOCK
+  ════════════════════════════════════════ -->
+  <div class="geo-block" aria-label="Geneva geographic data">
+    <div class="geo-item">
+      <span class="geo-label">Coordinates</span>
+      <span class="geo-value">46.2044° N · 6.1432° E</span>
+    </div>
+    <div class="geo-item">
+      <span class="geo-label">Elevation</span>
+      <span class="geo-value">373 m</span>
+    </div>
+    <div class="geo-item">
+      <span class="geo-label">Population</span>
+      <span class="geo-value">200,000+</span>
+    </div>
+    <div class="geo-item">
+      <span class="geo-label">Founded</span>
+      <span class="geo-value">58 BC</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       EDITORIAL — FULL-BLEED SPLIT (reversed)
+  ════════════════════════════════════════ -->
+  <div class="heritage section-full" aria-label="Geneva and horology editorial">
+    <div class="heritage-content" style="order:1;">
+      <p class="label reveal">Geneva &amp; Horology</p>
+      <h2 class="heritage-heading reveal reveal-delay-1">
+        The world's<br /><em>capital of<br />timekeeping</em>
+      </h2>
+      <p class="heritage-body reveal reveal-delay-2">
+        Geneva has been the world capital of precision timekeeping since the 16th century, when Huguenot craftsmen fleeing France brought their metalworking skills to the shores of Lac Léman. The city's particular culture of discipline, precision, and civic pride translated naturally into horology — and the watchmaking trade flourished.
+        <br /><br />
+        By the 18th century, Geneva was producing more watches than any other city on earth. The Poinçon de Genève — the Geneva Seal — was established to protect and certify this legacy. Every Template Watch bearing the seal carries 500 years of accumulated knowledge, passed from master to apprentice across the rooftops of this extraordinary city.
+      </p>
+      <a href="heritage.html" class="heritage-cta reveal reveal-delay-3">
+        Our Heritage
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+    <div class="heritage-image" style="order:2;">
+      <img
+        src="images/1563729784474.jpg"
+        srcset="images/1563729784474.jpg 480w,
+                images/1563729784474.jpg 720w,
+                images/1563729784474.jpg 960w"
+        sizes="(max-width: 1024px) 100vw, 50vw"
+        alt="The historic old town of Geneva — birthplace of watchmaking culture"
+        loading="lazy"
+        decoding="async"
+      />
+      <span class="heritage-image-caption">Vieille Ville · Genève · Switzerland</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       BRAND STATS STRIP
+  ════════════════════════════════════════ -->
+  <div class="stats-strip" aria-label="Geneva horology statistics">
+    <div class="stats-strip-item reveal">
+      <span class="stats-strip-num">500+</span>
+      <span class="stats-strip-label">Years of Geneva Horology</span>
+    </div>
+    <div class="stats-strip-item reveal reveal-delay-1">
+      <span class="stats-strip-num">200</span>
+      <span class="stats-strip-label">Watch Maisons in the City</span>
+    </div>
+    <div class="stats-strip-item reveal reveal-delay-2">
+      <span class="stats-strip-num">46.2044° N</span>
+      <span class="stats-strip-label">Our Coordinates</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       NEWSLETTER / FINAL CTA
+  ════════════════════════════════════════ -->
+  <div class="newsletter-section">
+    <div class="newsletter-bg" aria-hidden="true"></div>
+    <div class="newsletter-inner">
+      <div>
+        <p class="label reveal">Private Access</p>
+        <h2 class="nl-heading reveal reveal-delay-1">Join the<br /><em>Template Circle</em></h2>
+        <p class="nl-sub reveal reveal-delay-2">Be first to receive new references, private salon invitations in Geneva, and access to limited atelier editions — never more than 50 pieces.</p>
+      </div>
+      <form class="nl-form reveal reveal-delay-1" onsubmit="return false;">
+        <div class="nl-input-row"><input class="nl-input" type="text" placeholder="Your name" aria-label="Your name" /></div>
+        <div class="nl-input-row">
+          <input class="nl-input" type="email" placeholder="your@email.com" aria-label="Email address" />
+          <button class="nl-submit" type="submit">Apply</button>
+        </div>
+        <p class="nl-note">By applying you agree to our privacy policy. We share nothing and write rarely.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <p class="footer-brand-name">Template Watches</p>
+          <p class="footer-brand-tagline">Handcrafted timepieces from our atelier in Geneva, Switzerland. Precision since 1887.</p>
+          <div class="footer-social">
+            <a class="footer-social-link" href="#" aria-label="Instagram">Ig</a>
+            <a class="footer-social-link" href="#" aria-label="X / Twitter">X</a>
+            <a class="footer-social-link" href="#" aria-label="LinkedIn">Li</a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-col-title">Collection</p>
+          <ul class="footer-links">
+            <li><a href="collection/lac-leman.html">Lac Léman</a></li>
+            <li><a href="collection/rhone-tourbillon.html">Rhône Tourbillon</a></li>
+            <li><a href="collection/mont-blanc-chrono.html">Mont Blanc Chrono</a></li>
+            <li><a href="collection/grand-feu-enamel.html">Grand Feu Enamel</a></li>
+            <li><a href="collection/complications.html">Complications</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Maison</p>
+          <ul class="footer-links">
+            <li><a href="heritage.html">Our Heritage</a></li>
+            <li><a href="maison/atelier.html">The Atelier</a></li>
+            <li><a href="craftsmanship.html">Craftsmanship</a></li>
+            <li><a href="maison/bespoke.html">Bespoke</a></li>
+            <li><a href="maison/press.html">Press</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Services</p>
+          <ul class="footer-links">
+            <li><a href="services/private-appointment.html">Private Appointment</a></li>
+            <li><a href="services/after-sales.html">After-Sales</a></li>
+            <li><a href="services/certification.html">Certification</a></li>
+            <li><a href="services/contact.html">Contact Geneva</a></li>
+          </ul>
+          <div style="margin-top:2.5rem;">
+            <p class="footer-col-title">Geneva Atelier</p>
+            <p style="font-size:.8125rem;color:var(--warm-gray);line-height:1.7;">14, Rue de Rive<br />1204 Genève<br />Switzerland<br /><br />+41 22 310 00 00</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Template Watches SA · All rights reserved · Geneva, Switzerland</p>
+        <div class="footer-geneva"><span class="footer-geneva-dot" aria-hidden="true"></span>Assembled in Geneva · Certified Swiss Made</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

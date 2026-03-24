@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Collection — Template Watches</title>
+  <meta name="description" content="Explore the 2025 Template Watches collection — five signature timepieces handcrafted in our Geneva atelier. Dress, sport, tourbillon and grand complication references." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* PAGE-SPECIFIC STYLES */
+    .page-hero {
+      position: relative;
+      height: clamp(320px, 45vh, 520px);
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      margin-top: 0;
+    }
+    .page-hero-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+    }
+    .page-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(12,11,9,.85) 0%, rgba(12,11,9,.3) 60%, rgba(12,11,9,.5) 100%);
+    }
+    .page-hero-content {
+      position: relative;
+      z-index: 2;
+      padding: clamp(2rem,4vw,4rem) var(--gutter);
+      width: 100%;
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+    .page-hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .page-hero-title {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 6vw, 5.5rem);
+      font-weight: 300;
+      color: var(--ivory);
+      line-height: 1;
+      letter-spacing: -.01em;
+    }
+    .page-hero-title em { font-style: italic; color: var(--gold-light); }
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: clamp(2.5rem, 4vw, 4rem);
+    }
+    .filter-btn {
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--warm-gray);
+      border: 1px solid var(--ink-12);
+      padding: .5rem 1.25rem;
+      border-radius: 2px;
+      cursor: pointer;
+      background: none;
+      transition: color .3s, border-color .3s, background .3s;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      color: var(--ink);
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    /* Collection page layout */
+    .collection-page-section {
+      padding: clamp(4rem, 8vw, 8rem) var(--gutter);
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    /* Stats strip */
+    .stats-strip {
+      background: var(--ink);
+      padding: clamp(3rem, 5vw, 5rem) var(--gutter);
+    }
+    .stats-strip-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .stats-strip-item {
+      text-align: center;
+      border-right: 1px solid rgba(247,244,238,.12);
+      padding: 0 2rem;
+    }
+    .stats-strip-item:last-child { border-right: none; }
+    .stats-strip-num {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300;
+      color: var(--gold-light);
+      line-height: 1;
+      display: block;
+      margin-bottom: .5rem;
+    }
+    .stats-strip-label {
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--ivory-60);
+    }
+
+    @media (max-width: 600px) {
+      .stats-strip-inner {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      .stats-strip-item {
+        border-right: none;
+        border-bottom: 1px solid rgba(247,244,238,.12);
+        padding: 2rem 0;
+      }
+      .stats-strip-item:last-child {
+        border-bottom: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════
+       MOBILE MENU OVERLAY
+  ════════════════════════════════════════ -->
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&#215;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="collection.html" class="mobile-menu-link">Collection</a></li>
+      <li><a href="heritage.html" class="mobile-menu-link">Heritage</a></li>
+      <li><a href="craftsmanship.html" class="mobile-menu-link">Craftsmanship</a></li>
+      <li><a href="geneva.html" class="mobile-menu-link">Geneva</a></li>
+    </ul>
+    <a href="services/private-appointment.html" class="mobile-nav-cta mobile-menu-link">
+      Request Appointment
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </a>
+    <p class="mobile-menu-footer">Geneva · Switzerland · Est. 1887</p>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       NAVIGATION
+  ════════════════════════════════════════ -->
+  <nav id="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo">Template Watches</a>
+    <ul class="nav-links">
+      <li><a href="collection.html">Collection</a></li>
+      <li><a href="heritage.html">Heritage</a></li>
+      <li><a href="craftsmanship.html">Craftsmanship</a></li>
+      <li><a href="geneva.html">Geneva</a></li>
+    </ul>
+    <a href="services/private-appointment.html" class="nav-cta">Request Appointment</a>
+    <div class="nav-hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- ════════════════════════════════════════
+       PAGE HERO
+  ════════════════════════════════════════ -->
+  <div class="page-hero" aria-label="Collection hero">
+    <div
+      class="page-hero-bg"
+      style="background-image: url('images/1523275335684.jpg');"
+      role="img"
+      aria-label="Close-up of a luxury watch"
+    ></div>
+    <div class="page-hero-overlay" aria-hidden="true"></div>
+    <div class="page-hero-content">
+      <div class="page-hero-eyebrow">
+        <span class="divider" style="background: var(--gold-light);"></span>
+        <span class="label" style="color: var(--gold-light);">2025 Collection</span>
+      </div>
+      <h1 class="page-hero-title">
+        Signature<br /><em>Timepieces</em>
+      </h1>
+    </div>
+  </div>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+  <!-- ════════════════════════════════════════
+       COLLECTION GRID
+  ════════════════════════════════════════ -->
+  <section class="collection-page-section" aria-label="Watch collection">
+
+    <!-- Filter bar -->
+    <div class="filter-bar" role="group" aria-label="Filter collection by category">
+      <button class="filter-btn active" type="button">All</button>
+      <button class="filter-btn" type="button">Dress</button>
+      <button class="filter-btn" type="button">Sport</button>
+      <button class="filter-btn" type="button">Tourbillon</button>
+      <button class="filter-btn" type="button">Complications</button>
+    </div>
+
+    <!-- Watch grid -->
+    <div class="collection-grid">
+
+      <!-- CARD 1 — Lac Léman -->
+      <article class="watch-card reveal">
+        <a href="collection/lac-leman.html" class="watch-card-img" aria-label="View Lac Léman details">
+          <img
+            src="images/1523275335684.jpg"
+            srcset="images/1523275335684.jpg 400w,
+                    images/1523275335684.jpg 560w,
+                    images/1523275335684.jpg 800w"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            alt="Lac Léman — Template Watches dress watch with hand-guilloché silver dial"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="watch-card-badge">New</span>
+        </a>
+        <div class="watch-card-body">
+          <p class="watch-card-ref">Ref. TW-01 · 2025</p>
+          <h2 class="watch-card-name">Lac Léman</h2>
+          <p class="watch-card-desc">Hand-guilloché silver dial with blued steel hands. Self-winding Calibre TW-09.</p>
+          <div class="watch-card-footer">
+            <span class="watch-card-price">CHF 18,400</span>
+            <a href="collection/lac-leman.html" class="watch-card-cta">Discover</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 2 — Rhône Tourbillon -->
+      <article class="watch-card reveal reveal-delay-1">
+        <a href="collection/rhone-tourbillon.html" class="watch-card-img" aria-label="View Rhône Tourbillon details">
+          <img
+            src="images/1594534475808.jpg"
+            srcset="images/1594534475808.jpg 400w,
+                    images/1594534475808.jpg 560w,
+                    images/1594534475808.jpg 800w"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            alt="Rhône Tourbillon — Template Watches flying tourbillon in skeletonised platinum case"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="watch-card-badge">Maison</span>
+        </a>
+        <div class="watch-card-body">
+          <p class="watch-card-ref">Ref. TW-07 · 2025</p>
+          <h2 class="watch-card-name">Rhône Tourbillon</h2>
+          <p class="watch-card-desc">Flying tourbillon at 6 o'clock in a skeletonised platinum case of 42mm.</p>
+          <div class="watch-card-footer">
+            <span class="watch-card-price">CHF 94,000</span>
+            <a href="collection/rhone-tourbillon.html" class="watch-card-cta">Discover</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 3 — Mont Blanc Chrono -->
+      <article class="watch-card reveal reveal-delay-2">
+        <a href="collection/mont-blanc-chrono.html" class="watch-card-img" aria-label="View Mont Blanc Chrono details">
+          <img
+            src="images/1548245423.jpg"
+            srcset="images/1548245423.jpg 400w,
+                    images/1548245423.jpg 560w,
+                    images/1548245423.jpg 800w"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            alt="Mont Blanc Chrono — Template Watches column-wheel chronograph in titanium or steel"
+            loading="lazy"
+            decoding="async"
+          />
+        </a>
+        <div class="watch-card-body">
+          <p class="watch-card-ref">Ref. TW-14 · 2025</p>
+          <h2 class="watch-card-name">Mont Blanc Chrono</h2>
+          <p class="watch-card-desc">Column-wheel chronograph with 72-hour power reserve. Available in titanium or steel.</p>
+          <div class="watch-card-footer">
+            <span class="watch-card-price">CHF 31,200</span>
+            <a href="collection/mont-blanc-chrono.html" class="watch-card-cta">Discover</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 4 — Grand Feu Enamel -->
+      <article class="watch-card reveal">
+        <a href="collection/grand-feu-enamel.html" class="watch-card-img" aria-label="View Grand Feu Enamel details">
+          <img
+            src="images/1558618666.jpg"
+            srcset="images/1558618666.jpg 400w,
+                    images/1558618666.jpg 560w,
+                    images/1558618666.jpg 800w"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            alt="Grand Feu Enamel — Template Watches hand-painted grand feu enamel dial fired at 800°C"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="watch-card-badge">Limited</span>
+        </a>
+        <div class="watch-card-body">
+          <p class="watch-card-ref">Ref. TW-22 · 2025</p>
+          <h2 class="watch-card-name">Grand Feu Enamel</h2>
+          <p class="watch-card-desc">Grand feu enamel dial fired at 800°C, hand-painted by our sole remaining enamel artisan.</p>
+          <div class="watch-card-footer">
+            <span class="watch-card-price">CHF 46,500</span>
+            <a href="collection/grand-feu-enamel.html" class="watch-card-cta">Discover</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 5 — Complications -->
+      <article class="watch-card reveal reveal-delay-1">
+        <a href="collection/complications.html" class="watch-card-img" aria-label="View Complications details">
+          <img
+            src="images/1491555103944.jpg"
+            srcset="images/1491555103944.jpg 400w,
+                    images/1491555103944.jpg 560w,
+                    images/1491555103944.jpg 800w"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            alt="Complications — Template Watches perpetual calendar with moon phase and minute repeater"
+            loading="lazy"
+            decoding="async"
+          />
+        </a>
+        <div class="watch-card-body">
+          <p class="watch-card-ref">Ref. TW-33 · 2025</p>
+          <h2 class="watch-card-name">Complications</h2>
+          <p class="watch-card-desc">Perpetual calendar with moon phase, minute repeater, and power reserve indicator.</p>
+          <div class="watch-card-footer">
+            <span class="watch-card-price">CHF 78,000</span>
+            <a href="collection/complications.html" class="watch-card-cta">Discover</a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       STATS STRIP
+  ════════════════════════════════════════ -->
+  <div class="stats-strip" aria-label="Collection statistics">
+    <div class="stats-strip-inner">
+      <div class="stats-strip-item">
+        <span class="stats-strip-num">5</span>
+        <span class="stats-strip-label">References</span>
+      </div>
+      <div class="stats-strip-item">
+        <span class="stats-strip-num">248</span>
+        <span class="stats-strip-label">Components per Movement</span>
+      </div>
+      <div class="stats-strip-item">
+        <span class="stats-strip-num">12</span>
+        <span class="stats-strip-label">Pieces per Day Maximum</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       NEWSLETTER / FINAL CTA
+  ════════════════════════════════════════ -->
+  <div class="newsletter-section">
+    <div class="newsletter-bg" aria-hidden="true"></div>
+    <div class="newsletter-inner">
+      <div>
+        <p class="label reveal">Private Access</p>
+        <h2 class="nl-heading reveal reveal-delay-1">Join the<br /><em>Template Circle</em></h2>
+        <p class="nl-sub reveal reveal-delay-2">Be first to receive new references, private salon invitations in Geneva, and access to limited atelier editions — never more than 50 pieces.</p>
+      </div>
+      <form class="nl-form reveal reveal-delay-1" onsubmit="return false;">
+        <div class="nl-input-row">
+          <input class="nl-input" type="text" placeholder="Your name" aria-label="Your name" />
+        </div>
+        <div class="nl-input-row">
+          <input class="nl-input" type="email" placeholder="your@email.com" aria-label="Email address" />
+          <button class="nl-submit" type="submit">Apply</button>
+        </div>
+        <p class="nl-note">By applying you agree to our privacy policy. We share nothing and write rarely.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <p class="footer-brand-name">Template Watches</p>
+          <p class="footer-brand-tagline">Handcrafted timepieces from our atelier in Geneva, Switzerland. Precision since 1887.</p>
+          <div class="footer-social">
+            <a class="footer-social-link" href="#" aria-label="Instagram">Ig</a>
+            <a class="footer-social-link" href="#" aria-label="X / Twitter">X</a>
+            <a class="footer-social-link" href="#" aria-label="LinkedIn">Li</a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-col-title">Collection</p>
+          <ul class="footer-links">
+            <li><a href="collection/lac-leman.html">Lac Léman</a></li>
+            <li><a href="collection/rhone-tourbillon.html">Rhône Tourbillon</a></li>
+            <li><a href="collection/mont-blanc-chrono.html">Mont Blanc Chrono</a></li>
+            <li><a href="collection/grand-feu-enamel.html">Grand Feu Enamel</a></li>
+            <li><a href="collection/complications.html">Complications</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Maison</p>
+          <ul class="footer-links">
+            <li><a href="heritage.html">Our Heritage</a></li>
+            <li><a href="maison/atelier.html">The Atelier</a></li>
+            <li><a href="craftsmanship.html">Craftsmanship</a></li>
+            <li><a href="maison/bespoke.html">Bespoke</a></li>
+            <li><a href="maison/press.html">Press</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Services</p>
+          <ul class="footer-links">
+            <li><a href="services/private-appointment.html">Private Appointment</a></li>
+            <li><a href="services/after-sales.html">After-Sales</a></li>
+            <li><a href="services/certification.html">Certification</a></li>
+            <li><a href="services/contact.html">Contact Geneva</a></li>
+          </ul>
+          <div style="margin-top:2.5rem;">
+            <p class="footer-col-title">Geneva Atelier</p>
+            <p style="font-size:.8125rem;color:var(--warm-gray);line-height:1.7;">14, Rue de Rive<br />1204 Genève<br />Switzerland<br /><br />+41 22 310 00 00</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Template Watches SA · All rights reserved · Geneva, Switzerland</p>
+        <div class="footer-geneva">
+          <span class="footer-geneva-dot" aria-hidden="true"></span>
+          Assembled in Geneva · Certified Swiss Made
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Template Watches — Geneva, Switzerland</title>
+  <meta name="description" content="Handcrafted luxury timepieces from Geneva, Switzerland. Template Watches — where heritage meets precision." />
+  <!-- CDN preconnects — eliminate DNS+TLS round-trips before any fetch -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Preload LCP hero image — split by breakpoint so mobile fetches
+       the 800 w variant and desktop fetches the 1400 w variant -->
+  <link
+    rel="preload"
+    as="image"
+    href="images/1530122037265.jpg"
+    media="(max-width: 768px)"
+    fetchpriority="high"
+  />
+  <link
+    rel="preload"
+    as="image"
+    href="images/1530122037265.jpg"
+    media="(min-width: 769px)"
+    fetchpriority="high"
+  />
+
+  <!-- Slimmed font request: dropped weights 200/500/600 (never used in CSS).
+       Was 10 font files → now 6. Still render-blocking, but ~40% smaller. -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=DM+Mono:wght@300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+    <style>
+    /* page-specific styles only — shared styles are in styles.css */
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════
+       MOBILE MENU OVERLAY
+  ════════════════════════════════════════ -->
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&#215;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="#collection" class="mobile-menu-link">Collection</a></li>
+      <li><a href="#heritage" class="mobile-menu-link">Heritage</a></li>
+      <li><a href="#craftsmanship" class="mobile-menu-link">Craftsmanship</a></li>
+      <li><a href="#geneva" class="mobile-menu-link">Geneva</a></li>
+    </ul>
+    <a href="#collection" class="mobile-nav-cta mobile-menu-link">
+      Discover Pieces
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </a>
+    <p class="mobile-menu-footer">Geneva · Switzerland · Est. 1887</p>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       NAVIGATION
+  ════════════════════════════════════════ -->
+  <nav id="nav" role="navigation" aria-label="Main navigation">
+    <a href="#" class="nav-logo">Template Watches</a>
+    <ul class="nav-links">
+      <li><a href="#collection">Collection</a></li>
+      <li><a href="#heritage">Heritage</a></li>
+      <li><a href="#craftsmanship">Craftsmanship</a></li>
+      <li><a href="#geneva">Geneva</a></li>
+    </ul>
+    <a href="#collection" class="nav-cta">Discover Pieces</a>
+    <div class="nav-hamburger" aria-label="Menu" role="button" tabindex="0">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- ════════════════════════════════════════
+       HERO
+  ════════════════════════════════════════ -->
+  <section class="hero" aria-label="Hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow reveal">
+        <span class="divider"></span>
+        <span class="label">Geneva · Est. 1887</span>
+        <span class="divider"></span>
+      </div>
+      <h1 class="hero-title reveal reveal-delay-1">
+        Time,<br /><em>Perfected</em><br />in Geneva
+      </h1>
+      <p class="hero-subtitle reveal reveal-delay-2">
+        Each Template Watch is assembled by hand in our Geneva atelier — a convergence of Swiss horological tradition and contemporary precision.
+      </p>
+      <div class="hero-actions reveal reveal-delay-3">
+        <a href="#collection" class="btn-primary">
+          Explore the Collection
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </a>
+        <a href="#heritage" class="btn-ghost">
+          Our Heritage
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-scroll" aria-hidden="true">
+      <span class="label">Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       TICKER
+  ════════════════════════════════════════ -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track" id="ticker">
+      <!-- items duplicated via JS -->
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       BRAND STATEMENT
+  ════════════════════════════════════════ -->
+  <section aria-label="Brand statement">
+    <div class="brand-statement">
+      <div class="bs-left">
+        <p class="label reveal">The Art of Precision</p>
+        <div class="divider" style="display:block;margin:.75rem 0 2rem;"></div>
+        <h2 class="bs-heading reveal reveal-delay-1">
+          Where <em>ancient craft</em><br />meets modern<br />mastery
+        </h2>
+      </div>
+      <div class="bs-right">
+        <div class="bs-stat reveal">
+          <div class="bs-stat-num">137</div>
+          <div class="bs-stat-label">Years of Swiss Heritage</div>
+        </div>
+        <div class="bs-stat reveal reveal-delay-1">
+          <div class="bs-stat-num">248</div>
+          <div class="bs-stat-label">Individual Components per Movement</div>
+        </div>
+        <div class="bs-stat reveal reveal-delay-2">
+          <div class="bs-stat-num">6,200+</div>
+          <div class="bs-stat-label">Hours of Master Horologist Training</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       COLLECTION
+  ════════════════════════════════════════ -->
+  <section id="collection" aria-label="Collection">
+    <div class="collection-header">
+      <div>
+        <p class="label reveal">2025 Collection</p>
+        <div class="divider" style="display:block;margin:.75rem 0 1.25rem;"></div>
+        <h2 class="collection-title reveal reveal-delay-1">
+          Signature<br /><em>Timepieces</em>
+        </h2>
+      </div>
+      <a href="#" class="collection-link reveal reveal-delay-2">
+        View All
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="collection-grid">
+      <!-- CARD 1 -->
+      <article class="watch-card reveal">
+        <div class="watch-card-img">
+          <img
+            src="images/1523275335684.jpg"
+            srcset="images/1523275335684.jpg 400w,
+                    images/1523275335684.jpg 560w,
+                    images/1523275335684.jpg 800w"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            alt="Lac Léman — Template Watches dress watch"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="watch-card-badge">New</span>
+        </div>
+        <div class="watch-card-body">
+          <p class="watch-card-ref">Ref. TW-01 · 2025</p>
+          <h3 class="watch-card-name">Lac Léman</h3>
+          <p class="watch-card-desc">A celebration of Geneva's iconic lake. Hand-guilloché silver dial with blued steel hands. Self-winding Calibre TW-09.</p>
+          <div class="watch-card-footer">
+            <span class="watch-card-price">CHF 18,400</span>
+            <span class="watch-card-cta">Discover</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 2 -->
+      <article class="watch-card reveal reveal-delay-1">
+        <div class="watch-card-img">
+          <img
+            src="images/1594534475808.jpg"
+            srcset="images/1594534475808.jpg 400w,
+                    images/1594534475808.jpg 560w,
+                    images/1594534475808.jpg 800w"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            alt="Rhône Tourbillon — Template Watches complication"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="watch-card-badge">Maison</span>
+        </div>
+        <div class="watch-card-body">
+          <p class="watch-card-ref">Ref. TW-07 · 2025</p>
+          <h3 class="watch-card-name">Rhône Tourbillon</h3>
+          <p class="watch-card-desc">Our crown jewel. A flying tourbillon at 6 o'clock, suspended within a skeletonised platinum case of 42mm.</p>
+          <div class="watch-card-footer">
+            <span class="watch-card-price">CHF 94,000</span>
+            <span class="watch-card-cta">Discover</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 3 -->
+      <article class="watch-card reveal reveal-delay-2">
+        <div class="watch-card-img">
+          <img
+            src="images/1548245423.jpg"
+            srcset="images/1548245423.jpg 400w,
+                    images/1548245423.jpg 560w,
+                    images/1548245423.jpg 800w"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            alt="Mont Blanc — Template Watches sport chronograph"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div class="watch-card-body">
+          <p class="watch-card-ref">Ref. TW-14 · 2025</p>
+          <h3 class="watch-card-name">Mont Blanc Chrono</h3>
+          <p class="watch-card-desc">Inspired by alpine precision. Column-wheel chronograph with a 72-hour power reserve. Available in titanium or steel.</p>
+          <div class="watch-card-footer">
+            <span class="watch-card-price">CHF 31,200</span>
+            <span class="watch-card-cta">Discover</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       HERITAGE (FULL-BLEED SPLIT)
+  ════════════════════════════════════════ -->
+  <div id="heritage" class="heritage section-full">
+    <div class="heritage-image">
+      <img
+        src="images/1506905925346.jpg"
+        srcset="images/1506905925346.jpg 480w,
+                images/1506905925346.jpg 720w,
+                images/1506905925346.jpg 960w"
+        sizes="(max-width: 1024px) 100vw, 50vw"
+        alt="Swiss Alps reflected in alpine lake — the landscape that inspires Template Watches"
+        loading="lazy"
+        decoding="async"
+      />
+      <span class="heritage-image-caption">Geneva, Switzerland — 46.2044° N, 6.1432° E</span>
+    </div>
+    <div class="heritage-content">
+      <p class="label reveal">Our Heritage</p>
+      <h2 class="heritage-heading reveal reveal-delay-1">
+        Born on the<br /><em>shores of<br />Lac Léman</em>
+      </h2>
+      <p class="heritage-body reveal reveal-delay-2">
+        In 1887, master watchmaker Édouard Renard established our atelier in the heart of Geneva's Plainpalais district. Drawing on the city's centuries-long tradition of horology, he fused Calvinist precision with a distinctly Genevan artistry — a philosophy that every Template Watch carries to this day.
+        <br /><br />
+        Our workshops remain on the same cobbled street, now home to twelve master horologists who assemble each movement by hand under 40× magnification, never more than twelve pieces per day.
+      </p>
+      <a href="#" class="heritage-cta reveal reveal-delay-3">
+        Read Our Story
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       CRAFTSMANSHIP BENTO
+  ════════════════════════════════════════ -->
+  <section id="craftsmanship" class="bento-section" aria-label="Craftsmanship">
+    <div class="section-label-row">
+      <p class="label reveal">Craftsmanship</p>
+      <span class="divider reveal reveal-delay-1"></span>
+    </div>
+    <h2 class="bento-heading reveal reveal-delay-1" style="margin-bottom:3rem;">
+      Every detail<br /><em>tells a story</em>
+    </h2>
+    <div class="bento-grid">
+      <!-- Large copy card -->
+      <div class="bento-card bc-1 reveal">
+        <div class="bc-1-num">01</div>
+        <div>
+          <h3 class="bc-1-title">In-house<br /><em>movement</em></h3>
+          <p class="bc-1-body">Every Calibre is designed, engineered, and assembled entirely within our Geneva manufacture. Zero outsourced components. Zero compromises.</p>
+        </div>
+      </div>
+      <!-- Photo card -->
+      <div class="bento-card bc-2 reveal reveal-delay-1">
+        <img
+          src="images/1491555103944.jpg"
+          srcset="images/1491555103944.jpg 360w,
+                  images/1491555103944.jpg 480w,
+                  images/1491555103944.jpg 700w"
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 34vw"
+          alt="Template Watches movement detail"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <!-- Stat card -->
+      <div class="bento-card bc-3 reveal reveal-delay-2">
+        <p class="bc-3-label">Power Reserve</p>
+        <p class="bc-3-stat">72 hrs<br />minimum</p>
+      </div>
+      <!-- Detail card -->
+      <div class="bento-card bc-4 reveal reveal-delay-1">
+        <div>
+          <p class="bc-4-label">Case Finishing</p>
+          <p class="bc-4-detail">Alternating satin &amp; mirror polish</p>
+        </div>
+        <p class="bc-4-subdetal">Every surface — bevelled, flanked, and brushed — is finished by a single artisan who signs the caseback upon completion.</p>
+      </div>
+      <!-- Photo card -->
+      <div class="bento-card bc-5 reveal reveal-delay-2">
+        <img
+          src="images/1558618666.jpg"
+          srcset="images/1558618666.jpg 360w,
+                  images/1558618666.jpg 480w,
+                  images/1558618666.jpg 700w"
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          alt="Template Watches luxury detail"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       GENEVA GALLERY
+  ════════════════════════════════════════ -->
+  <section id="geneva" class="gallery section-full" aria-label="Geneva gallery">
+    <div class="gallery-inner">
+      <p class="label reveal">The City</p>
+      <div class="divider" style="display:block;margin:.75rem 0 1.5rem;"></div>
+      <h2 class="gallery-heading reveal reveal-delay-1">
+        Geneva —<br /><em>where precision<br />is a way of life</em>
+      </h2>
+      <div class="gallery-strip">
+        <div class="gallery-item reveal">
+          <img
+            src="images/jet-deau.jpg"
+            srcset="images/jet-deau.jpg 960w"
+            sizes="(max-width: 768px) 80vw, 36vw"
+            alt="Jet d'Eau, Lake Geneva"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="gallery-item-label">Jet d'Eau · Lac Léman</span>
+        </div>
+        <div class="gallery-item reveal reveal-delay-1">
+          <img
+            src="images/1563729784474.jpg"
+            srcset="images/1563729784474.jpg 300w,
+                    images/1563729784474.jpg 440w,
+                    images/1563729784474.jpg 600w"
+            sizes="(max-width: 768px) 80vw, 18vw"
+            alt="Old Town Geneva"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="gallery-item-label">Vieille Ville</span>
+        </div>
+        <div class="gallery-item reveal reveal-delay-2">
+          <img
+            src="images/1531366936337.jpg"
+            srcset="images/1531366936337.jpg 360w,
+                    images/1531366936337.jpg 560w,
+                    images/1531366936337.jpg 750w"
+            sizes="(max-width: 768px) 80vw, 27vw"
+            alt="Swiss Alps near Geneva"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="gallery-item-label">Mont Blanc Massif</span>
+        </div>
+        <div class="gallery-item reveal reveal-delay-3">
+          <img
+            src="images/1491557345352.jpg"
+            srcset="images/1491557345352.jpg 300w,
+                    images/1491557345352.jpg 440w,
+                    images/1491557345352.jpg 600w"
+            sizes="(max-width: 768px) 80vw, 18vw"
+            alt="Geneva waterfront at dusk"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="gallery-item-label">Quai du Rhône</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       PRESS / QUOTE
+  ════════════════════════════════════════ -->
+  <div class="press">
+    <div class="press-inner">
+      <div>
+        <p class="label" style="color:var(--gold-dim);margin-bottom:1.5rem;">As Seen In</p>
+        <blockquote class="press-quote reveal">
+          <span class="press-quote-mark">"</span>
+          Template Watches represents the apex of what independent Swiss horology can achieve — a house that honours tradition without being enslaved to it.
+        </blockquote>
+        <div class="press-source reveal reveal-delay-1">
+          <span class="divider"></span>
+          <span class="press-source-name">Revolution Magazine · 2024</span>
+        </div>
+      </div>
+      <div class="press-logos reveal reveal-delay-2">
+        <div class="press-logo-item">
+          <span class="press-logo-name">Hodinkee</span>
+          <span class="press-logo-desc">Watch of the Year · 2023</span>
+        </div>
+        <div class="press-logo-item">
+          <span class="press-logo-name">The Wall Street Journal</span>
+          <span class="press-logo-desc">Best Independent Maison</span>
+        </div>
+        <div class="press-logo-item">
+          <span class="press-logo-name">Revolution</span>
+          <span class="press-logo-desc">Grand Prix Nominee · 2024</span>
+        </div>
+        <div class="press-logo-item">
+          <span class="press-logo-name">Financial Times</span>
+          <span class="press-logo-desc">How to Spend It · 2024</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       NEWSLETTER / FINAL CTA
+  ════════════════════════════════════════ -->
+  <div class="newsletter-section">
+    <div class="newsletter-bg" aria-hidden="true"></div>
+    <div class="newsletter-inner">
+      <div>
+        <p class="label reveal">Private Access</p>
+        <h2 class="nl-heading reveal reveal-delay-1">
+          Join the<br /><em>Template Circle</em>
+        </h2>
+        <p class="nl-sub reveal reveal-delay-2">
+          Be first to receive new references, private salon invitations in Geneva, and access to limited atelier editions — never more than 50 pieces.
+        </p>
+      </div>
+      <form class="nl-form reveal reveal-delay-1" onsubmit="return false;">
+        <div class="nl-input-row">
+          <input class="nl-input" type="text" placeholder="Your name" aria-label="Your name" />
+        </div>
+        <div class="nl-input-row">
+          <input class="nl-input" type="email" placeholder="your@email.com" aria-label="Email address" />
+          <button class="nl-submit" type="submit">Apply</button>
+        </div>
+        <p class="nl-note">By applying you agree to our privacy policy. We share nothing and write rarely.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <p class="footer-brand-name">Template Watches</p>
+          <p class="footer-brand-tagline">Handcrafted timepieces from our atelier in Geneva, Switzerland. Precision since 1887.</p>
+          <div class="footer-social">
+            <a class="footer-social-link" href="#" aria-label="Instagram">Ig</a>
+            <a class="footer-social-link" href="#" aria-label="X / Twitter">X</a>
+            <a class="footer-social-link" href="#" aria-label="LinkedIn">Li</a>
+          </div>
+        </div>
+
+        <div>
+          <p class="footer-col-title">Collection</p>
+          <ul class="footer-links">
+            <li><a href="#">Lac Léman</a></li>
+            <li><a href="#">Rhône Tourbillon</a></li>
+            <li><a href="#">Mont Blanc Chrono</a></li>
+            <li><a href="#">Grand Feu Enamel</a></li>
+            <li><a href="#">Complications</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="footer-col-title">Maison</p>
+          <ul class="footer-links">
+            <li><a href="#">Our Heritage</a></li>
+            <li><a href="#">The Atelier</a></li>
+            <li><a href="#">Craftsmanship</a></li>
+            <li><a href="#">Bespoke</a></li>
+            <li><a href="#">Press</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="footer-col-title">Services</p>
+          <ul class="footer-links">
+            <li><a href="#">Private Appointment</a></li>
+            <li><a href="#">After-Sales</a></li>
+            <li><a href="#">Certification</a></li>
+            <li><a href="#">Contact Geneva</a></li>
+          </ul>
+          <div style="margin-top:2.5rem;">
+            <p class="footer-col-title">Geneva Atelier</p>
+            <p style="font-size:.8125rem;color:var(--warm-gray);line-height:1.7;">
+              14, Rue de Rive<br />1204 Genève<br />Switzerland<br /><br />
+              +41 22 310 00 00
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Template Watches SA · All rights reserved · Geneva, Switzerland</p>
+        <div class="footer-geneva">
+          <span class="footer-geneva-dot" aria-hidden="true"></span>
+          Assembled in Geneva · Certified Swiss Made
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ════════════════════════════════════════
+       JAVASCRIPT
+  ════════════════════════════════════════ -->
+  <script src="main.js"></script>
+</body>
+</html>
