@@ -30,7 +30,7 @@
        RESET + BASE
     ───────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; font-size: 16px; }
+    html { font-size: 16px; }
     body {
       background: var(--ivory);
       color: var(--ink);
@@ -61,12 +61,14 @@
     }
     .reveal {
       opacity: 0;
-      transform: translateY(2rem);
-      transition: opacity .9s var(--ease-expo), transform .9s var(--ease-expo);
+      transform: translate3d(0, 28px, 0);
+      transition: opacity .65s var(--ease-expo), transform .65s var(--ease-expo);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     .reveal.visible {
       opacity: 1;
-      transform: translateY(0);
+      transform: translate3d(0, 0, 0);
     }
     .reveal-delay-1 { transition-delay: .15s; }
     .reveal-delay-2 { transition-delay: .30s; }
@@ -336,6 +338,7 @@
     .ticker-track {
       display: flex;
       gap: 0;
+      will-change: transform;
       animation: ticker 28s linear infinite;
       white-space: nowrap;
     }

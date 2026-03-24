@@ -58,23 +58,41 @@
     [...tickerItems, ...tickerItems].forEach(t => track.appendChild(buildItem(t)));
 
     /* ── INTERSECTION OBSERVER (REVEAL) ─────── */
-    // Skip animation entirely if user prefers reduced motion
     const revealEls = document.querySelectorAll('.reveal');
     if (prefersRM) {
       revealEls.forEach(el => el.classList.add('visible'));
     } else {
+      // Pre-promote GPU layers ~200px before element enters view
+      const preObserver = new IntersectionObserver(
+        entries => {
+          entries.forEach(e => {
+            e.target.style.willChange = e.isIntersecting ? 'transform, opacity' : 'auto';
+          });
+        },
+        { rootMargin: '200px 0px 0px 0px', threshold: 0 }
+      );
+
       const observer = new IntersectionObserver(
         entries => {
           entries.forEach(e => {
             if (e.isIntersecting) {
               e.target.classList.add('visible');
               observer.unobserve(e.target);
+              preObserver.unobserve(e.target);
+              // Free GPU layer once animation finishes
+              e.target.addEventListener('transitionend', () => {
+                e.target.style.willChange = 'auto';
+              }, { once: true });
             }
           });
         },
-        { threshold: 0.10 }
+        { threshold: 0.08 }
       );
-      revealEls.forEach(el => observer.observe(el));
+
+      revealEls.forEach(el => {
+        observer.observe(el);
+        preObserver.observe(el);
+      });
       // Immediately reveal hero content
       document.querySelectorAll('.hero .reveal').forEach(el => {
         setTimeout(() => el.classList.add('visible'), 200);
