@@ -269,10 +269,10 @@
         <h2 class="nl-heading reveal reveal-delay-1">Join the<br /><em>Template Circle</em></h2>
         <p class="nl-sub reveal reveal-delay-2">Be first to receive new references, private salon invitations in Geneva, and access to limited atelier editions — never more than 50 pieces.</p>
       </div>
-      <form class="nl-form reveal reveal-delay-1" onsubmit="return false;">
-        <div class="nl-input-row"><input class="nl-input" type="text" placeholder="Your name" aria-label="Your name" /></div>
+      <form class="nl-form reveal reveal-delay-1" name="newsletter" method="POST" data-netlify="true"><input type="hidden" name="form-name" value="newsletter" />
+        <div class="nl-input-row"><input class="nl-input" type="text" name="name" placeholder="Your name" aria-label="Your name" required /></div>
         <div class="nl-input-row">
-          <input class="nl-input" type="email" placeholder="your@email.com" aria-label="Email address" />
+          <input class="nl-input" type="email" name="email" placeholder="your@email.com" aria-label="Email address" required />
           <button class="nl-submit" type="submit">Apply</button>
         </div>
         <p class="nl-note">By applying you agree to our privacy policy. We share nothing and write rarely.</p>

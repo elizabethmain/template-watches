@@ -1,0 +1,4377 @@
+{
+  "name": "Book Analyzer - v5e",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Book Analyzer — Section 1: Foundation\nWebhook trigger → Settings → Text Extraction → Parallel Splitters (Full Book / CxC / PxP)",
+        "height": 120,
+        "width": 1420,
+        "color": 6
+      },
+      "id": "75c8d96d-7f1e-46df-9337-b99025cac11a",
+      "name": "Sticky — Section 1 Header",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2704,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "book-analyzer",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "331b7cee-01ed-4067-9fd6-10a69c4ba33d",
+      "name": "Webhook — Book Upload",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2352,
+        560
+      ],
+      "webhookId": "book-analyzer-upload"
+    },
+    {
+      "parameters": {
+        "content": "## Webhook Trigger\nAccepts `POST` with `multipart/form-data`:\n\n| Field | Type | Description |\n|---|---|---|\n| `file` | binary | PDF or .txt ebook |\n| `book_id` | string | Unique book identifier |\n| `dry_run` | boolean | If true, skip all writes |\n\n**URL:** `[n8n-host]/webhook/book-analyzer`",
+        "height": 284,
+        "width": 484,
+        "color": 3
+      },
+      "id": "197c66de-792c-4d92-a440-021213db3d2b",
+      "name": "Sticky — Webhook",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2816,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s1-book-id",
+              "name": "book_id",
+              "value": "={{ $json.body?.book_id ?? $json.query?.book_id ?? ('book_' + $now.toMillis()) }}",
+              "type": "string"
+            },
+            {
+              "id": "s2-dry-run",
+              "name": "dry_run",
+              "value": "={{ $json.body?.dry_run === true || $json.body?.dry_run === 'true' || $json.query?.dry_run === 'true' }}",
+              "type": "boolean"
+            },
+            {
+              "id": "s3-pinecone-index",
+              "name": "pinecone_index",
+              "value": "strawberryjade",
+              "type": "string"
+            },
+            {
+              "id": "s4-drive-folder",
+              "name": "google_drive_folder_id",
+              "value": "YOUR_GOOGLE_DRIVE_FOLDER_ID",
+              "type": "string"
+            },
+            {
+              "id": "s5-claude-model",
+              "name": "claude_model",
+              "value": "claude-sonnet-4-20250514",
+              "type": "string"
+            },
+            {
+              "id": "s6-embedding-model",
+              "name": "embedding_model",
+              "value": "text-embedding-3-small",
+              "type": "string"
+            },
+            {
+              "id": "cdcb4763-33c3-4b37-a396-44e86ff342b3",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "de865440-f576-4c24-954a-c5eb9270007f",
+      "name": "Settings",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1296,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Settings\nEdit the **Set** node to change:\n\n- `pinecone_index` — Pinecone index name\n- `google_drive_folder_id` — Drive folder for JSON backups\n- `claude_model` — Claude model ID\n- `embedding_model` — OpenAI embedding model\n\n`book_id` and `dry_run` are read from the webhook payload.",
+        "height": 220,
+        "width": 260,
+        "color": 3
+      },
+      "id": "70711835-ca0d-4e78-8f33-d59cb1f19ebe",
+      "name": "Sticky — Settings",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1632,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Text Extraction\nExtracts full plain text from the uploaded file.\n\n**Default:** PDF mode (`Operation = pdf`)\n**For .txt files:** set `Operation = text`\n\n`binaryPropertyName` must match the webhook upload field name (default: `data`).\n\nOutputs `json.text` with the full book content.",
+        "height": 220,
+        "width": 260,
+        "color": 3
+      },
+      "id": "a2f63e32-e2b2-402d-a445-0047a3307760",
+      "name": "Sticky — Text Extraction",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2048,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Splitters — Parallel Fan-Out\n\nThree independent branches fan out from Text Extraction.\n\n**Full Book Splitter** — 1 item\n**CxC Splitter** — N items (one per chapter)\n**PxP Splitter** — M items (one per paragraph)",
+        "height": 300,
+        "width": 360,
+        "color": 4
+      },
+      "id": "24a8e0ac-7eb8-4e4e-a696-4e707b8d49d1",
+      "name": "Sticky — Splitters",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $binary.file.mimeType }}",
+                    "rightValue": "text/plain",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "c280cf5c-23ee-473f-afda-ad500e655328"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "TXT"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3fb2e72f-12ff-4137-8f7c-04d4c070ccce",
+                    "leftValue": "={{ $binary.file.mimeType }}",
+                    "rightValue": "application/pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PDF"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -2016,
+        560
+      ],
+      "id": "16d56292-850e-482f-ac52-dfd3b5ac24f6",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=file",
+        "options": {}
+      },
+      "id": "31feebf4-e9ce-4f7c-8bcb-c4aa5625179b",
+      "name": "Extract Text from PDF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -1632,
+        656
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Section 2: Full-Book Analysis Branches\nThree branches fan out from **Full Book Splitter** in parallel.\n**Credential:** HTTP Header Auth `Anthropic API Key` (x-api-key)\n\n**Simplified:** Error Handler nodes removed — `continueOnFail: true` on each Claude node. Chunkers read `content[0].text` directly from Anthropic response.",
+        "width": 1020,
+        "color": 6
+      },
+      "id": "723f26e9-edc7-42be-a505-46d0670f958f",
+      "name": "Sticky — Section 2 Header",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        4336
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Branch: narrative_arc\nNamespace: `narrative_arc` | Granularity: `full_book`\n**Replace placeholder prompt before use.**",
+        "height": 200,
+        "width": 1020,
+        "color": 5
+      },
+      "id": "8c8d9980-d43d-4ce4-967f-7a96fe357900",
+      "name": "Sticky — narrative_arc",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        320
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Branch: themes\nNamespace: `themes` | Granularity: `full_book`\n**Replace placeholder prompt before use.**",
+        "height": 200,
+        "width": 1020,
+        "color": 5
+      },
+      "id": "ed479611-7429-411c-a7f8-eb4880fadbbd",
+      "name": "Sticky — themes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        528
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Branch: pacing\nNamespace: `pacing` | Granularity: `full_book`\n**Replace placeholder prompt before use.**",
+        "height": 312,
+        "width": 1020,
+        "color": 5
+      },
+      "id": "763d4579-b0f0-4215-9685-6383cf0d261f",
+      "name": "Sticky — pacing",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        992
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Section 3: Chapter-Level (CxC) Analysis Branches\nFour branches fan out from **CxC Splitter** — each runs once per chapter item.\n\n**Branches:** chapter_summaries | characters | dialogue | grammar\n\n**Simplified:** Error Handler nodes and Merge — CxC Branches removed. Aggregator reads directly from each Claude node via `$('Claude — x').all()` + `$('CxC Splitter').all()` for chapter numbers.",
+        "height": 80,
+        "width": 1760,
+        "color": 6
+      },
+      "id": "ecf34076-66cb-4da8-a137-4dfbc75b623c",
+      "name": "Sticky — Section 3 Header",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        304
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Branch: chapter_summaries\nNamespace: `chapter_summaries` | Granularity: `chapter`\n**Replace placeholder prompt before use.**",
+        "height": 432,
+        "width": 960,
+        "color": 3
+      },
+      "id": "0c3975c4-417f-402a-afdc-2a3a369f8d1b",
+      "name": "Sticky — chapter_summaries",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        416
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Branch: characters\nNamespace: `characters` | Granularity: `chapter`\nExpects Claude JSON: `{ \"characters\": [\"Name\", ...] }`\n**Replace placeholder prompt before use.**",
+        "height": 240,
+        "width": 960,
+        "color": 3
+      },
+      "id": "b00f3739-283f-4f3e-8199-50e81c630902",
+      "name": "Sticky — characters",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        1488
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Branch: dialogue\nNamespace: `dialogue` | Granularity: `chapter`\n**Replace placeholder prompt before use.**",
+        "height": 240,
+        "width": 960,
+        "color": 3
+      },
+      "id": "652a5953-4be0-4ba2-bb27-47e5fe6b354f",
+      "name": "Sticky — dialogue",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        1120
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Branch: grammar\nNamespace: `grammar` | Granularity: `chapter`\n**Replace placeholder prompt before use.**",
+        "height": 240,
+        "width": 960,
+        "color": 3
+      },
+      "id": "0e2c4220-67ef-4e47-94c3-05465dd8a1da",
+      "name": "Sticky — grammar",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        1840
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Aggregator — CxC Branches\nReads raw Anthropic responses directly from each Claude node via `$('Claude — x').all()`.\nUses `$('CxC Splitter').all()` for chapter_number pairing by index.\n\nNo Merge node required. Triggered by whichever CxC branch connects last.\n\n- `all_chapter_summaries[]` sorted by chapter_number\n- `character_roster[]` with `character_id: [book_id]_char_[index]`\n- `dialogue_results[]` and `grammar_results[]` pass-through",
+        "height": 680,
+        "width": 500,
+        "color": 4
+      },
+      "id": "33fb8a0c-23d9-486d-aeb0-0e515db8bfaf",
+      "name": "Sticky — Aggregator",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2816,
+        544
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================================\n// AGGREGATOR — CxC Branches (simplified, no error handlers)\n// Reads raw Anthropic responses directly from each Claude node.\n// Uses CxC Splitter item index for chapter_number pairing.\n// =============================================================\nconst settings = $('Settings').first().json;\nconst book_id  = settings.book_id;\n\nfunction getAll(nodeName) {\n  try { return $(nodeName).all().map(i => i.json); } catch(_) { return []; }\n}\n\nconst cxcItems      = getAll('CxC Splitter');\nconst summaryResps  = getAll('Claude — chapter_summaries');\nconst charResps     = getAll('Claude — characters');\nconst dialogueResps = getAll('Claude — dialogue');\nconst grammarResps  = getAll('Claude — grammar');\n\nfunction getText(resp) { return resp?.content?.[0]?.text ?? null; }\nfunction isErr(resp) { const sc = resp?.statusCode; return (typeof sc === 'number' && sc >= 400) || resp?.type === 'error'; }\n\nconst all_chapter_summaries = summaryResps\n  .map((resp, i) => ({ chapter_number: cxcItems[i]?.chapter_number ?? (i + 1), analysis_text: isErr(resp) ? null : getText(resp) }))\n  .filter(r => r.analysis_text !== null)\n  .sort((a, b) => a.chapter_number - b.chapter_number);\n\nfunction extractNames(text) {\n  if (!text) return [];\n  try {\n    const p = JSON.parse(text);\n    if (Array.isArray(p.characters)) return p.characters.map(String);\n    if (Array.isArray(p)) return p.map(c => (typeof c === 'string' ? c : c.name)).filter(Boolean);\n  } catch (_) {}\n  return [];\n}\n\nconst charMap = {}; let charIdx = 0;\ncharResps.forEach((resp, i) => {\n  if (isErr(resp)) return;\n  const ch = cxcItems[i]?.chapter_number ?? (i + 1);\n  for (const name of extractNames(getText(resp))) {\n    const key = name.toLowerCase().trim();\n    if (!charMap[key]) { charMap[key] = { character_id: `${book_id}_char_${charIdx++}`, name, chapter_appearances: [] }; }\n    if (!charMap[key].chapter_appearances.includes(ch)) { charMap[key].chapter_appearances.push(ch); }\n  }\n});\nconst character_roster = Object.values(charMap).sort((a, b) => a.character_id.localeCompare(b.character_id));\n\nconst passThrough = resps => resps\n  .map((resp, i) => ({ chapter_number: cxcItems[i]?.chapter_number ?? (i + 1), analysis_text: isErr(resp) ? null : getText(resp) }))\n  .filter(r => r.analysis_text !== null)\n  .sort((a, b) => a.chapter_number - b.chapter_number);\n\nreturn [{ json: { ...settings, book_id, total_chapters: all_chapter_summaries.length, all_chapter_summaries, character_roster, dialogue_results: passThrough(dialogueResps), grammar_results: passThrough(grammarResps), aggregated_at: new Date().toISOString() } }];\n"
+      },
+      "id": "6fa29c14-2dac-4abc-8c06-719bef08b9ab",
+      "name": "Aggregator — CxC Branches",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2896,
+        1216
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Section 4: Paragraph-Level (PxP) Analysis Branches\nTwo branches fan out from **PxP Splitter** — each runs once per paragraph item.\n\n**Branch 1:** `sentence_patterns` — Claude analysis of sentence structure and style patterns\n**Branch 2:** `spaCy Parser` — Structural NLP via local spaCy server at `http://85.31.233.48:8000/parse`\n\n**Simplified:** Error Handler nodes removed. Claude — sentence_patterns and spaCy Parser feed Merge — PxP Branches directly.\nPxP Combiner reads raw API responses; uses `$('PxP Splitter').all()` for paragraph pairing by index.\nMerge append order: sentence_patterns items first (0..N-1), spaCy items second (N..2N-1).",
+        "height": 80,
+        "width": 1560,
+        "color": 6
+      },
+      "id": "7823bfd5-57e4-475e-aa4a-a6bf50928c9d",
+      "name": "Sticky — Section 4 Header",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3328,
+        576
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Branch: sentence_patterns\nNamespace: `sentence_patterns` | Granularity: `paragraph`\nAnalyses sentence structure, rhythm, and stylistic patterns per paragraph.\nRuns once per paragraph item from PxP Splitter.\n**Replace placeholder prompt before use.**",
+        "height": 260,
+        "width": 960,
+        "color": 3
+      },
+      "id": "dde21fcb-3edb-487c-ab3b-7773bedc1dd2",
+      "name": "Sticky — sentence_patterns",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3152,
+        928
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Branch: spaCy Parser\nGranularity: `paragraph`\nPOSTs each paragraph to a local spaCy server for structural NLP parsing.\n\n**Endpoint:** `http://85.31.233.48:8000/parse`\n**Body:** `{ \"text\": <paragraph_text> }`\n**No auth required** (local server).\n\nStores full spaCy JSON response as `spacy_result`.\nErrors absorbed — workflow continues.",
+        "height": 260,
+        "width": 960,
+        "color": 3
+      },
+      "id": "201a210f-3769-45b6-891f-88f1f1461b32",
+      "name": "Sticky — spaCy Parser",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        1680
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://85.31.233.48:8000/parse",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.paragraph_text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3e95b6b7-c332-4113-8ced-1db8330c9be1",
+      "name": "spaCy Parser",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3552,
+        1840
+      ],
+      "disabled": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "content": "### PxP Merge + Combiner\nMerge (append, 2 inputs) collects all paragraph results.\nCombiner uses `$('PxP Splitter').all()` for chapter/paragraph index pairing.\n\nMerge append order: sentence_patterns (0..N-1), then spaCy (N..2N-1).\n\n```\n{\n  book_id, granularity: 'paragraph',\n  chapter_number, paragraph_index,\n  sentence_patterns_analysis: string | null,\n  sentence_patterns_error:    string | null,\n  spacy_analysis:             object | null,\n  spacy_error:                string | null\n}\n```",
+        "height": 600,
+        "width": 500,
+        "color": 4
+      },
+      "id": "846302b0-bb7f-4d47-ab9f-97f178108eec",
+      "name": "Sticky — PxP Merge",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4208,
+        992
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "id": "3abe7855-3229-46ea-adf7-4cd154511c75",
+      "name": "Merge — PxP Branches",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        4272,
+        1232
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================================\n// PxP COMBINER (simplified, no error handlers)\n// Merge append order: sentence_patterns first (0..N-1), spaCy second (N..2N-1).\n// Uses $('PxP Splitter').all() for chapter_number / paragraph_index pairing.\n// =============================================================\nconst allItems  = $input.all();\nconst settings  = $('Settings').first().json;\nconst pxpItems  = $('PxP Splitter').all().map(i => i.json);\nconst N         = pxpItems.length;\n\nconst sItems  = allItems.slice(0, N).map(i => i.json);   // sentence_patterns responses\nconst spItems = allItems.slice(N).map(i => i.json);      // spaCy responses\n\nfunction isErr(r) { const sc = r?.statusCode; return typeof sc === 'number' && sc >= 400; }\n\nreturn pxpItems.map((pxp, i) => ({\n  json: {\n    book_id:                    settings.book_id,\n    granularity:                'paragraph',\n    chapter_number:             pxp.chapter_number,\n    paragraph_index:            pxp.paragraph_index,\n    sentence_patterns_analysis: isErr(sItems[i]) ? null : (\n  typeof sItems[i]?.output === 'string' ? sItems[i].output : JSON.stringify(sItems[i]?.output ?? null)\n),\n    sentence_patterns_error:    isErr(sItems[i])  ? `HTTP ${sItems[i].statusCode}` : null,\n    spacy_analysis:             isErr(spItems[i]) ? null : (spItems[i] ?? null),\n    spacy_error:                isErr(spItems[i]) ? `HTTP ${spItems[i].statusCode}` : null,\n  }\n})).sort((a, b) => {\n  const cd = a.chapter_number - b.chapter_number;\n  return cd !== 0 ? cd : a.paragraph_index - b.paragraph_index;\n});\n"
+      },
+      "id": "9d751934-e951-4592-8dd1-fc28059807e9",
+      "name": "PxP Combiner",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4624,
+        1232
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Section 5a v2: Full-Book Embedding & Pinecone Upload\nThree simplified embedding pipelines (one per full-book namespace).\n\nEach pipeline: **Chunker** → **Dry Run If** → **[JSON File Save | Pinecone Upload]**\n\n- Chunker reads `content[0].text` directly from Claude — [namespace] response\n- Chunk output: `{ book_id, namespace, granularity, chapter_number: null, paragraph_index: null, chunk_index, chunk_text, text }`\n- Pinecone Upload node handles embedding internally via connected **Embeddings OpenAI** sub-node (text-embedding-3-small)\n- `dry_run=true` → JSON File Save only &nbsp;&nbsp; `dry_run=false` → Pinecone upsert\n- No separate OpenAI HTTP Request nodes, no Error Handlers, no Metadata Formatters",
+        "height": 120,
+        "width": 2000,
+        "color": 6
+      },
+      "id": "57fe4eb2-7f98-4362-b497-062f33e70077",
+      "name": "Sticky — Section 5a Header",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        992,
+        4336
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Pipeline: narrative_arc\nNamespace: `narrative_arc` | Granularity: `full_book`\n\nChunks `content[0].text` from Claude — narrative_arc (~500 tokens / 2000 chars, 200-char overlap).\nPinecone Upload embeds via Embeddings OpenAI sub-node and upserts to namespace `narrative_arc`.\n\n`chunk_text` also stored as `text` for Pinecone document field.",
+        "height": 240,
+        "width": 2000,
+        "color": 5
+      },
+      "id": "c30f1715-aab2-43c4-a29c-384bb336ffd2",
+      "name": "Sticky — Pipeline narrative_arc",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        992,
+        4512
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item     = $input.first();\nconst settings = $('Settings').first().json;\nconst NS       = 'narrative_arc';\nconst book_id  = settings.book_id;\n\nconst output = item.json?.output ?? {};\nconst text   = typeof output === 'string' ? output : JSON.stringify(output);\n\nif (!text || text.trim().length === 0) { return []; }\n\nreturn [{\n  json: {\n    book_id,\n    namespace:       NS,\n    granularity:     'full_book',\n    chapter_number:  null,\n    paragraph_index: null,\n    chunk_index:     0,\n    chunk_text:      text,\n    analysis_text:   text,\n    text:            text,\n    ...output\n  }\n}];"
+      },
+      "id": "21018a4b-d402-423c-a399-3c5220273aaf",
+      "name": "Chunker — narrative_arc",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        4912
+      ],
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "dry-run-narrative-arc",
+              "leftValue": "={{ $('Settings').first().json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "33cce8c2-5fed-4c83-b60f-3ea51428663c",
+      "name": "Dry Run If — narrative_arc",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        4928
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// JSON FILE SAVE — narrative_arc (dry_run=true)\nconst allItems = $input.all();\nconst settings = $('Settings').first().json;\nconst NS       = 'narrative_arc';\nconst chunks   = allItems.map(i => i.json);\nconst payload  = { book_id: settings.book_id, namespace: NS, chunk_count: chunks.length, vectors: chunks, saved_at: new Date().toISOString() };\nconst filename = `${settings.book_id}_${NS}.json`;\nlet saved = false;\nlet error_message = null;\ntry { const fs = require('fs'); fs.writeFileSync(filename, JSON.stringify(payload, null, 2)); saved = true; } catch (e) { error_message = String(e.message ?? e); }\nreturn [{ json: { namespace: NS, chunk_count: chunks.length, filename, saved, dry_run: true, error_message, json_payload: saved ? null : JSON.stringify(payload), completed_at: new Date().toISOString() } }];\n"
+      },
+      "id": "c60654d0-81b7-4aff-9242-394b40344caf",
+      "name": "JSON Save — narrative_arc",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2064,
+        4592
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "={{ $('Settings').first().json.pinecone_index }}",
+          "mode": "id"
+        },
+        "options": {
+          "pineconeNamespace": "narrative_arc"
+        }
+      },
+      "id": "ba17f963-c57a-4a2a-a9f4-b2792f3ef377",
+      "name": "Pinecone Upload — narrative_arc",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        4864
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "I7SepXgaJI7U1JPY",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {
+          "dimensions": 3072
+        }
+      },
+      "id": "312c26b1-3d30-4689-96dd-ed40be330595",
+      "name": "Embeddings OpenAI — narrative_arc",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        5136
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Kvg7N4xgURBCjBT1",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### Pipeline: themes\nNamespace: `themes` | Granularity: `full_book`\n\nChunks `content[0].text` from Claude — themes (~500 tokens / 2000 chars, 200-char overlap).\nPinecone Upload embeds via Embeddings OpenAI sub-node and upserts to namespace `themes`.",
+        "height": 240,
+        "width": 2000,
+        "color": 5
+      },
+      "id": "2b3736b7-b481-408c-8f9e-e739e731037e",
+      "name": "Sticky — Pipeline themes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        368,
+        5632
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================================\n// CHUNKER — themes\n// Reads content[0].text from raw Claude response (no error handler).\n// ~500 tokens / 2000 chars per chunk, 200-char overlap.\n// =============================================================\nconst item     = $input.first();\nconst settings = $('Settings').first().json;\nconst NS       = 'themes';\nconst book_id  = settings.book_id;\nconst output = item.json?.output ?? {};\nconst text = typeof output === 'string'\n  ? output\n  : JSON.stringify(output);\n\nif (!text || text.trim().length === 0) { return []; }\n\nreturn [{\n  json: {\n    book_id,\n    namespace: NS,\n    granularity: 'full_book',\n    chapter_number: null,\n    paragraph_index: null,\n    chunk_index: 0,\n    chunk_text: text,\n    analysis_text: text,\n    text: text,\n    ...output\n  }\n}];"
+      },
+      "id": "9d803fd2-465b-4156-b383-aad3ed4d188e",
+      "name": "Chunker — themes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        5760
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "dry-run-themes",
+              "leftValue": "={{ $('Settings').first().json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1275a838-95ce-4fff-8147-634e8e0de9f2",
+      "name": "Dry Run If — themes",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1616,
+        5792
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "={{ $('Settings').first().json.pinecone_index }}",
+          "mode": "id"
+        },
+        "options": {
+          "pineconeNamespace": "themes"
+        }
+      },
+      "id": "2a81a559-a6af-4c96-a283-7612692f7781",
+      "name": "Pinecone Upload — themes",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        2432,
+        5680
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "I7SepXgaJI7U1JPY",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {
+          "dimensions": 3072
+        }
+      },
+      "id": "3bf9102c-6f56-4a61-8fcd-02c9955bb19f",
+      "name": "Embeddings OpenAI — themes",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        5952
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Kvg7N4xgURBCjBT1",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### Pipeline: pacing\nNamespace: `pacing` | Granularity: `full_book`\n\nChunks `content[0].text` from Claude — pacing (~500 tokens / 2000 chars, 200-char overlap).\nPinecone Upload embeds via Embeddings OpenAI sub-node and upserts to namespace `pacing`.",
+        "height": 240,
+        "width": 2000,
+        "color": 5
+      },
+      "id": "cb927051-9a20-4b08-a41a-5789aeafbcdb",
+      "name": "Sticky — Pipeline pacing",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        16,
+        6336
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const item     = $input.first();\nconst settings = $('Settings').first().json;\nconst NS       = 'pacing';\nconst book_id  = settings.book_id;\n\nconst output = item.json?.output ?? {};\nconst text = typeof output === 'string'\n  ? output\n  : JSON.stringify(output);\n\nif (!text || text.trim().length === 0) { return []; }\n\nreturn [{\n  json: {\n    book_id,\n    namespace:       NS,\n    granularity:     'full_book',\n    chapter_number:  null,\n    paragraph_index: null,\n    chunk_index:     0,\n    chunk_text:      text,\n    text:            text,\n    ...output\n  }\n}];"
+      },
+      "id": "45c58fb7-8597-49ec-9e43-8f8388e36289",
+      "name": "Chunker — pacing",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        6576
+      ],
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "dry-run-pacing",
+              "leftValue": "={{ $('Settings').first().json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "44cfb580-fe70-4128-a1ea-f238c2768abc",
+      "name": "Dry Run If — pacing",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1376,
+        6608
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// JSON FILE SAVE — pacing (dry_run=true)\nconst allItems = $input.all();\nconst settings = $('Settings').first().json;\nconst NS       = 'pacing';\nconst chunks   = allItems.map(i => i.json);\nconst payload  = { book_id: settings.book_id, namespace: NS, chunk_count: chunks.length, vectors: chunks, saved_at: new Date().toISOString() };\nconst filename = `${settings.book_id}_${NS}.json`;\nlet saved = false;\nlet error_message = null;\ntry { const fs = require('fs'); fs.writeFileSync(filename, JSON.stringify(payload, null, 2)); saved = true; } catch (e) { error_message = String(e.message ?? e); }\nreturn [{ json: { namespace: NS, chunk_count: chunks.length, filename, saved, dry_run: true, error_message, json_payload: saved ? null : JSON.stringify(payload), completed_at: new Date().toISOString() } }];\n"
+      },
+      "id": "1adb0ea2-94ed-4c17-9279-bc7dda254c6b",
+      "name": "JSON Save — pacing",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2304,
+        6480
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "={{ $('Settings').item.json.pinecone_index }}",
+          "mode": "id"
+        },
+        "options": {
+          "pineconeNamespace": "pacing"
+        }
+      },
+      "id": "41259753-afa9-4416-b254-c3970c7d4ae4",
+      "name": "Pinecone Upload — pacing",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        6640
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "I7SepXgaJI7U1JPY",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {
+          "dimensions": 3072
+        }
+      },
+      "id": "714586c5-c566-4aeb-9838-3749717b4b8c",
+      "name": "Embeddings OpenAI — pacing",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        2112,
+        6832
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Kvg7N4xgURBCjBT1",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "binaryPropertyName": "=file",
+        "destinationKey": "text",
+        "options": {}
+      },
+      "id": "f6239ff5-e987-47e0-99ab-83a9f0c999c1",
+      "name": "Extract Text from TXT",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -1632,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const settings = $('Settings').first().json;\nconst NS       = 'chapter_summaries';\nconst book_id  = settings.book_id;\n\nconst results = [];\n\nfor (const item of $input.all()) {\n  const output = item.json?.output ?? {};\n  const text = typeof output === 'string'\n    ? output\n    : JSON.stringify(output);\n\n  if (!text || text.trim().length === 0) continue;\n\n  const chapter_number = item.json?.chapter_number ?? null;\n\n  results.push({\n    json: {\n      book_id,\n      namespace:       NS,\n      granularity:     'chapter',\n      chapter_number,\n      paragraph_index: null,\n      chunk_index:     0,\n      chunk_text:      text,\n      text:            text,\n      ...output\n    }\n  });\n}\n\nreturn results;"
+      },
+      "id": "d0a0aac6-3162-4074-ab7e-254a06dd87d6",
+      "name": "Chunker — chapter_summaries",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2224,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================================\n// CHUNKER — dialogue\n// Runs once per chapter item.\n// Reads content[0].text from raw Claude response.\n// Uses $itemIndex to pair with CxC Splitter for chapter_number.\n// =============================================================\nconst item     = $input.item;\nconst settings = $('Settings').first().json;\nconst NS       = 'dialogue';\nconst text = typeof item.json?.output === 'string'\n  ? item.json.output\n  : JSON.stringify(item.json?.output ?? '');\n\nconst chapter_number = $('CxC Splitter').all()[$itemIndex]?.json?.chapter_number ?? ($itemIndex + 1);\nconst text     = item.json?.content?.[0]?.text ?? '';\n\nconst CHUNK_SIZE    = 2000;\nconst CHUNK_OVERLAP = 200;\n\nif (!text || text.trim().length === 0) { return []; }\n\nconst chunks = [];\nlet start = 0;\nwhile (start < text.length) {\n  const end = Math.min(start + CHUNK_SIZE, text.length);\n  chunks.push(text.slice(start, end));\n  if (end >= text.length) break;\n  start += CHUNK_SIZE - CHUNK_OVERLAP;\n}\n\nreturn chunks.map((chunk_text, chunk_index) => ({\n  json: {\n    book_id,\n    namespace:       NS,\n    granularity:     'chapter',\n    chapter_number,\n    paragraph_index: null,\n    chunk_index,\n    chunk_text,\n    analysis_text:   chunk_text,\n  }\n}));\n"
+      },
+      "id": "b853c402-a00f-4219-b8a1-aaa5efbc1d26",
+      "name": "Chunker — dialogue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2320,
+        1280
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================================\n// CHUNKER — characters\n// Runs once per chapter item.\n// Reads content[0].text from raw Claude response.\n// Uses $itemIndex to pair with CxC Splitter for chapter_number.\n// =============================================================\nconst item     = $input.item;\nconst settings = $('Settings').first().json;\nconst NS       = 'characters';\nconst text = typeof item.json?.output === 'string'\n  ? item.json.output\n  : JSON.stringify(item.json?.output ?? '');\n\nconst chapter_number = $('CxC Splitter').all()[$itemIndex]?.json?.chapter_number ?? ($itemIndex + 1);\nconst text     = item.json?.content?.[0]?.text ?? '';\n\nconst CHUNK_SIZE    = 2000;\nconst CHUNK_OVERLAP = 200;\n\nif (!text || text.trim().length === 0) { return []; }\n\nconst chunks = [];\nlet start = 0;\nwhile (start < text.length) {\n  const end = Math.min(start + CHUNK_SIZE, text.length);\n  chunks.push(text.slice(start, end));\n  if (end >= text.length) break;\n  start += CHUNK_SIZE - CHUNK_OVERLAP;\n}\n\nreturn chunks.map((chunk_text, chunk_index) => ({\n  json: {\n    book_id,\n    namespace:       NS,\n    granularity:     'chapter',\n    chapter_number,\n    paragraph_index: null,\n    chunk_index,\n    chunk_text,\n    analysis_text:   chunk_text,\n  }\n}));\n"
+      },
+      "id": "5dac9e2d-9558-461a-8218-d5213ab46d24",
+      "name": "Chunker — characters",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2320,
+        1648
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================================\n// CHUNKER — grammar\n// Runs once per chapter item.\n// Reads content[0].text from raw Claude response.\n// Uses $itemIndex to pair with CxC Splitter for chapter_number.\n// =============================================================\nconst item     = $input.item;\nconst settings = $('Settings').first().json;\nconst NS       = 'grammar';\nconst text = typeof item.json?.output === 'string'\n  ? item.json.output\n  : JSON.stringify(item.json?.output ?? '');\n\nconst chapter_number = $('CxC Splitter').all()[$itemIndex]?.json?.chapter_number ?? ($itemIndex + 1);\nconst text     = item.json?.content?.[0]?.text ?? '';\n\nconst CHUNK_SIZE    = 2000;\nconst CHUNK_OVERLAP = 200;\n\nif (!text || text.trim().length === 0) { return []; }\n\nconst chunks = [];\nlet start = 0;\nwhile (start < text.length) {\n  const end = Math.min(start + CHUNK_SIZE, text.length);\n  chunks.push(text.slice(start, end));\n  if (end >= text.length) break;\n  start += CHUNK_SIZE - CHUNK_OVERLAP;\n}\n\nreturn chunks.map((chunk_text, chunk_index) => ({\n  json: {\n    book_id,\n    namespace:       NS,\n    granularity:     'chapter',\n    chapter_number,\n    paragraph_index: null,\n    chunk_index,\n    chunk_text,\n    analysis_text:   chunk_text,\n  }\n}));\n"
+      },
+      "id": "5bcbb30f-1a07-4a10-8b86-5856b0b0f47e",
+      "name": "Chunker — grammar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2320,
+        2016
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================================\n// CHUNKER — sentence_patterns\n// Runs once per paragraph item from PxP Combiner.\n// Chunks sentence_patterns_analysis; passes spacy_analysis through.\n// =============================================================\nconst item              = $input.item;\nconst settings          = $('Settings').first().json;\nconst NS                = 'sentence_patterns';\nconst text = typeof item.json?.output === 'string'\n  ? item.json.output\n  : JSON.stringify(item.json?.output ?? '');\n\nconst chapter_number    = item.json.chapter_number;\nconst paragraph_index   = item.json.paragraph_index;\nconst spacy_analysis    = item.json.spacy_analysis ?? null;\nconst text              = item.json.sentence_patterns_analysis ?? '';\n\nconst CHUNK_SIZE    = 2000;\nconst CHUNK_OVERLAP = 200;\n\nif (!text || text.trim().length === 0) { return []; }\n\nconst chunks = [];\nlet start = 0;\nwhile (start < text.length) {\n  const end = Math.min(start + CHUNK_SIZE, text.length);\n  chunks.push(text.slice(start, end));\n  if (end >= text.length) break;\n  start += CHUNK_SIZE - CHUNK_OVERLAP;\n}\n\nreturn chunks.map((chunk_text, chunk_index) => ({\n  json: {\n    book_id,\n    namespace:         NS,\n    granularity:       'paragraph',\n    chapter_number,\n    paragraph_index,\n    chunk_index,\n    chunk_text,\n    analysis_text:     chunk_text,\n    spacy_analysis,\n  }\n}));\n"
+      },
+      "id": "6d0cc30c-c01f-450c-8da2-2b781ee499d5",
+      "name": "Chunker — sentence_patterns",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4960,
+        1232
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "tableId": "analysis_results"
+      },
+      "id": "a901f2e6-fb80-4c31-a14f-2c73f20729a4",
+      "name": "Supabase — narrative_arc",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        4752
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "0xIDWr3HHqnhT0wf",
+          "name": "Supabase - Book Analysis"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "tableId": "analysis_results"
+      },
+      "id": "c63f9d4a-56ca-483f-8980-f9d8ea083454",
+      "name": "Supabase — themes",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        5600
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "0xIDWr3HHqnhT0wf",
+          "name": "Supabase - Book Analysis"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "tableId": "analysis_results"
+      },
+      "id": "3193f3bd-494a-4c3c-b315-55beeb23a8af",
+      "name": "Supabase — pacing",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1824,
+        6416
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "0xIDWr3HHqnhT0wf",
+          "name": "Supabase - Book Analysis"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "tableId": "analysis_results"
+      },
+      "id": "4564662f-4fe6-4f0c-9cd1-dac67ff3f850",
+      "name": "Supabase — chapter_summaries",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        784
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "0xIDWr3HHqnhT0wf",
+          "name": "Supabase - Book Analysis"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "tableId": "analysis_results"
+      },
+      "id": "31a643fe-a0c7-468f-add6-9ab934044c05",
+      "name": "Supabase — dialogue",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2656,
+        1280
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "0xIDWr3HHqnhT0wf",
+          "name": "Supabase - Book Analysis"
+        }
+      },
+      "disabled": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "tableId": "analysis_results"
+      },
+      "id": "1538c3f8-688f-428c-a186-842ff14a4db8",
+      "name": "Supabase — characters",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2656,
+        1648
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "0xIDWr3HHqnhT0wf",
+          "name": "Supabase - Book Analysis"
+        }
+      },
+      "disabled": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "tableId": "analysis_results"
+      },
+      "id": "f41a4b3b-0010-4bab-9bf6-e2f758b48ffd",
+      "name": "Supabase — grammar",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2656,
+        2016
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "0xIDWr3HHqnhT0wf",
+          "name": "Supabase - Book Analysis"
+        }
+      },
+      "disabled": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "tableId": "analysis_results"
+      },
+      "id": "08e346dd-b93a-4747-a877-0b8ba35cbf52",
+      "name": "Supabase — sentence_patterns",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        5296,
+        1232
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "0xIDWr3HHqnhT0wf",
+          "name": "Supabase - Book Analysis"
+        }
+      },
+      "disabled": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "content": "## Section 6: Supabase Inserts\nParallel Supabase inserts fan out from every Chunker node.\n\nTable: `analysis_results` │ Credential: `Supabase - Book Analysis`\n\nFields written: `book_id`, `namespace`, `granularity`, `chapter_number`, `paragraph_index`, `chunk_index`, `analysis_text`, `spacy_analysis`\n\n`continueOnFail: true` on every Supabase node — workflow continues on DB error.\nNo book text fields are stored.",
+        "height": 120,
+        "width": 1400,
+        "color": 6
+      },
+      "id": "d59c4af5-cc45-41a9-adc9-f1c139fd9696",
+      "name": "Sticky — Supabase Section Header",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        912,
+        2064
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Supabase — narrative_arc\nTable: `analysis_results` │ Namespace: `narrative_arc` │ Granularity: `full_book`\n\nInserts one row per chunk from **Chunker — narrative_arc**.\n`continueOnFail: true` — DB errors do not stop the workflow.",
+        "width": 320,
+        "color": 7
+      },
+      "id": "277295b4-65a8-4e2d-a3b4-8f9206a1296e",
+      "name": "Sticky — Supabase narrative_arc",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        2128
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Supabase — themes\nTable: `analysis_results` │ Namespace: `themes` │ Granularity: `full_book`\n\nInserts one row per chunk from **Chunker — themes**.\n`continueOnFail: true` — DB errors do not stop the workflow.",
+        "height": 448,
+        "width": 352,
+        "color": 7
+      },
+      "id": "da3d2f43-b4cc-4514-a95a-97881f22f47c",
+      "name": "Sticky — Supabase themes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        5328
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Supabase — pacing\nTable: `analysis_results` │ Namespace: `pacing` │ Granularity: `full_book`\n\nInserts one row per chunk from **Chunker — pacing**.\n`continueOnFail: true` — DB errors do not stop the workflow.",
+        "height": 368,
+        "width": 320,
+        "color": 7
+      },
+      "id": "093d6fe7-ebaa-46ed-9ddb-0e8ee27f48fa",
+      "name": "Sticky — Supabase pacing",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        6176
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Supabase — chapter_summaries\nTable: `analysis_results` │ Namespace: `chapter_summaries` │ Granularity: `chapter`\n\nInserts one row per chunk from **Chunker — chapter_summaries**.\n`continueOnFail: true` — DB errors do not stop the workflow.",
+        "height": 224,
+        "width": 320,
+        "color": 7
+      },
+      "id": "c820b905-7180-4051-b122-73b07198869c",
+      "name": "Sticky — Supabase chapter_summaries",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2464,
+        544
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Supabase — dialogue\nTable: `analysis_results` │ Namespace: `dialogue` │ Granularity: `chapter`\n\nInserts one row per chunk from **Chunker — dialogue**.\n`continueOnFail: true` — DB errors do not stop the workflow.",
+        "width": 320,
+        "color": 7
+      },
+      "id": "b4a38002-4221-4b99-973a-4b3524261f4d",
+      "name": "Sticky — Supabase dialogue",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2384,
+        1168
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Supabase — characters\nTable: `analysis_results` │ Namespace: `characters` │ Granularity: `chapter`\n\nInserts one row per chunk from **Chunker — characters**.\n`continueOnFail: true` — DB errors do not stop the workflow.",
+        "width": 320,
+        "color": 7
+      },
+      "id": "9b22b25c-da5d-4c8a-a614-94a4739e8929",
+      "name": "Sticky — Supabase characters",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2384,
+        1536
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Supabase — grammar\nTable: `analysis_results` │ Namespace: `grammar` │ Granularity: `chapter`\n\nInserts one row per chunk from **Chunker — grammar**.\n`continueOnFail: true` — DB errors do not stop the workflow.",
+        "width": 320,
+        "color": 7
+      },
+      "id": "014507c9-81b4-4762-8de5-360a687eafe5",
+      "name": "Sticky — Supabase grammar",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2384,
+        1904
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Supabase — sentence_patterns\nTable: `analysis_results` │ Namespace: `sentence_patterns` │ Granularity: `paragraph`\n\nInserts one row per chunk from **Chunker — sentence_patterns**.\n`continueOnFail: true` — DB errors do not stop the workflow.",
+        "width": 320,
+        "color": 7
+      },
+      "id": "efabfd11-b2c0-47a4-8a38-c841e9a70f17",
+      "name": "Sticky — Supabase sentence_patterns",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        5072,
+        1120
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "dry-run-chapter_summaries",
+              "leftValue": "={{ $json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "601c222a-527f-46bd-aefe-a96d0df638c8",
+      "name": "Dry Run If — chapter_summaries",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// JSON FILE SAVE — chapter_summaries (dry_run=true)\nconst allItems = $input.all();\nconst settings = $('Settings').first().json;\nconst NS       = 'chapter_summaries';\nconst chunks   = allItems.map(i => i.json);\nconst payload  = { book_id: settings.book_id, namespace: NS, chunk_count: chunks.length, vectors: chunks, saved_at: new Date().toISOString() };\nconst filename = `${settings.book_id}_${NS}.json`;\nlet saved = false;\nlet error_message = null;\ntry { const fs = require('fs'); fs.writeFileSync(filename, JSON.stringify(payload, null, 2)); saved = true; } catch (e) { error_message = String(e.message ?? e); }\nreturn [{ json: { namespace: NS, chunk_count: chunks.length, filename, saved, dry_run: true, error_message, json_payload: saved ? null : JSON.stringify(payload), completed_at: new Date().toISOString() } }];\n"
+      },
+      "id": "1b972525-9322-43ea-8f22-b9e99e077bc1",
+      "name": "JSON Save — chapter_summaries",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3552,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "={{ $('Settings').first().json.pinecone_index }}",
+          "mode": "id"
+        },
+        "options": {
+          "pineconeNamespace": "chapter_summaries"
+        }
+      },
+      "id": "0b59da4e-46dd-4035-8037-00651dbb3862",
+      "name": "Pinecone Upload — chapter_summaries",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        3712,
+        976
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "I7SepXgaJI7U1JPY",
+          "name": "PineconeApi account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {
+          "dimensions": 3072
+        }
+      },
+      "id": "0ebc0818-8f0f-494f-aab0-1c7f4e5da2ed",
+      "name": "Embeddings OpenAI — chapter_summaries",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        3696,
+        1168
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Kvg7N4xgURBCjBT1",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### Pipeline: chapter_summaries\nNamespace: `chapter_summaries` │ Granularity: `chapter`\n\n**Chunker — chapter_summaries** fans out to:\n- PATH 1: Supabase insert\n- PATH 2: Dry Run If → [JSON Save │ Pinecone Upload]\n\nEmbeddings OpenAI sub-node embedded in Pinecone Upload node.",
+        "height": 200,
+        "width": 320,
+        "color": 5
+      },
+      "id": "04486183-edba-4a42-9ffc-6ab528cba842",
+      "name": "Sticky — 5b chapter_summaries",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        544
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "dry-run-dialogue",
+              "leftValue": "={{ $('Settings').first().json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d01d004a-a4c9-4c78-b246-719482558ef9",
+      "name": "Dry Run If — dialogue",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        1280
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// JSON FILE SAVE — dialogue (dry_run=true)\nconst allItems = $input.all();\nconst settings = $('Settings').first().json;\nconst NS       = 'dialogue';\nconst chunks   = allItems.map(i => i.json);\nconst payload  = { book_id: settings.book_id, namespace: NS, chunk_count: chunks.length, vectors: chunks, saved_at: new Date().toISOString() };\nconst filename = `${settings.book_id}_${NS}.json`;\nlet saved = false;\nlet error_message = null;\ntry { const fs = require('fs'); fs.writeFileSync(filename, JSON.stringify(payload, null, 2)); saved = true; } catch (e) { error_message = String(e.message ?? e); }\nreturn [{ json: { namespace: NS, chunk_count: chunks.length, filename, saved, dry_run: true, error_message, json_payload: saved ? null : JSON.stringify(payload), completed_at: new Date().toISOString() } }];\n"
+      },
+      "id": "84ea3d48-35f3-44ab-820f-b533689f8c6f",
+      "name": "JSON Save — dialogue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3600,
+        1280
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "={{ $('Settings').first().json.pinecone_index }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "e3befede-76af-471c-a331-da06ef3bd544",
+      "name": "Pinecone Upload — dialogue",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        3680,
+        1344
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "I7SepXgaJI7U1JPY",
+          "name": "PineconeApi account"
+        }
+      },
+      "disabled": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "text-embedding-3-small",
+          "cachedResultName": "text-embedding-3-small"
+        },
+        "options": {}
+      },
+      "id": "b9f5a700-d30f-45f3-a027-8e5792c1ed2e",
+      "name": "Embeddings OpenAI — dialogue",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        3552,
+        1568
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Kvg7N4xgURBCjBT1",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Pipeline: dialogue\nNamespace: `dialogue` │ Granularity: `chapter`\n\n**Chunker — dialogue** fans out to:\n- PATH 1: Supabase insert\n- PATH 2: Dry Run If → [JSON Save │ Pinecone Upload]\n\nEmbeddings OpenAI sub-node embedded in Pinecone Upload node.",
+        "height": 200,
+        "width": 320,
+        "color": 5
+      },
+      "id": "10af4276-fb3e-4d95-8f46-44d84f7e6028",
+      "name": "Sticky — 5b dialogue",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2864,
+        1152
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "dry-run-characters",
+              "leftValue": "={{ $('Settings').first().json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3b241201-06f3-4829-bca6-d7e30bfa2943",
+      "name": "Dry Run If — characters",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        1648
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// JSON FILE SAVE — characters (dry_run=true)\nconst allItems = $input.all();\nconst settings = $('Settings').first().json;\nconst NS       = 'characters';\nconst chunks   = allItems.map(i => i.json);\nconst payload  = { book_id: settings.book_id, namespace: NS, chunk_count: chunks.length, vectors: chunks, saved_at: new Date().toISOString() };\nconst filename = `${settings.book_id}_${NS}.json`;\nlet saved = false;\nlet error_message = null;\ntry { const fs = require('fs'); fs.writeFileSync(filename, JSON.stringify(payload, null, 2)); saved = true; } catch (e) { error_message = String(e.message ?? e); }\nreturn [{ json: { namespace: NS, chunk_count: chunks.length, filename, saved, dry_run: true, error_message, json_payload: saved ? null : JSON.stringify(payload), completed_at: new Date().toISOString() } }];\n"
+      },
+      "id": "1fdff5c5-1981-4327-b734-d7d7f060e7e3",
+      "name": "JSON Save — characters",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3616,
+        1472
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "={{ $('Settings').first().json.pinecone_index }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "cba49c8f-15e8-4273-9534-f905c8d57caa",
+      "name": "Pinecone Upload — characters",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        3648,
+        1712
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "I7SepXgaJI7U1JPY",
+          "name": "PineconeApi account"
+        }
+      },
+      "disabled": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "text-embedding-3-small",
+          "cachedResultName": "text-embedding-3-small"
+        },
+        "options": {}
+      },
+      "id": "894b4576-8716-4aba-a356-710e3d93604a",
+      "name": "Embeddings OpenAI — characters",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        3552,
+        1936
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Kvg7N4xgURBCjBT1",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Pipeline: characters\nNamespace: `characters` │ Granularity: `chapter`\n\n**Chunker — characters** fans out to:\n- PATH 1: Supabase insert\n- PATH 2: Dry Run If → [JSON Save │ Pinecone Upload]\n\nEmbeddings OpenAI sub-node embedded in Pinecone Upload node.",
+        "height": 200,
+        "width": 320,
+        "color": 5
+      },
+      "id": "40eba8c0-779f-4baa-ade6-df7366343807",
+      "name": "Sticky — 5b characters",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2864,
+        1504
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "dry-run-grammar",
+              "leftValue": "={{ $('Settings').first().json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "17d5bb88-a574-4a96-a054-9cbe8eab1d30",
+      "name": "Dry Run If — grammar",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        2016
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// JSON FILE SAVE — grammar (dry_run=true)\nconst allItems = $input.all();\nconst settings = $('Settings').first().json;\nconst NS       = 'grammar';\nconst chunks   = allItems.map(i => i.json);\nconst payload  = { book_id: settings.book_id, namespace: NS, chunk_count: chunks.length, vectors: chunks, saved_at: new Date().toISOString() };\nconst filename = `${settings.book_id}_${NS}.json`;\nlet saved = false;\nlet error_message = null;\ntry { const fs = require('fs'); fs.writeFileSync(filename, JSON.stringify(payload, null, 2)); saved = true; } catch (e) { error_message = String(e.message ?? e); }\nreturn [{ json: { namespace: NS, chunk_count: chunks.length, filename, saved, dry_run: true, error_message, json_payload: saved ? null : JSON.stringify(payload), completed_at: new Date().toISOString() } }];\n"
+      },
+      "id": "03309d08-7399-449c-bf2d-e7bf12cac36a",
+      "name": "JSON Save — grammar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3552,
+        1904
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "={{ $('Settings').first().json.pinecone_index }}",
+          "mode": "id"
+        },
+        "options": {
+          "pineconeNamespace": "grammar"
+        }
+      },
+      "id": "9582bf74-8473-4454-8702-99c71dee3fc1",
+      "name": "Pinecone Upload — grammar",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        3552,
+        2128
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "I7SepXgaJI7U1JPY",
+          "name": "PineconeApi account"
+        }
+      },
+      "disabled": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "8f85c34c-6c51-42d1-89a1-03a511f12c25",
+      "name": "Embeddings OpenAI — grammar",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        3536,
+        2400
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Kvg7N4xgURBCjBT1",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Pipeline: grammar\nNamespace: `grammar` │ Granularity: `chapter`\n\n**Chunker — grammar** fans out to:\n- PATH 1: Supabase insert\n- PATH 2: Dry Run If → [JSON Save │ Pinecone Upload]\n\nEmbeddings OpenAI sub-node embedded in Pinecone Upload node.",
+        "height": 200,
+        "width": 320,
+        "color": 5
+      },
+      "id": "66b0c185-8f44-4c52-86f3-8f4316b24feb",
+      "name": "Sticky — 5b grammar",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2864,
+        1888
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "dry-run-sentence_patterns",
+              "leftValue": "={{ $('Settings').first().json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "08d0e240-6691-47a3-8f43-2a50475dbfe0",
+      "name": "Dry Run If — sentence_patterns",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        5632,
+        1232
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// JSON FILE SAVE — sentence_patterns (dry_run=true)\nconst allItems = $input.all();\nconst settings = $('Settings').first().json;\nconst NS       = 'sentence_patterns';\nconst chunks   = allItems.map(i => i.json);\nconst payload  = { book_id: settings.book_id, namespace: NS, chunk_count: chunks.length, vectors: chunks, saved_at: new Date().toISOString() };\nconst filename = `${settings.book_id}_${NS}.json`;\nlet saved = false;\nlet error_message = null;\ntry { const fs = require('fs'); fs.writeFileSync(filename, JSON.stringify(payload, null, 2)); saved = true; } catch (e) { error_message = String(e.message ?? e); }\nreturn [{ json: { namespace: NS, chunk_count: chunks.length, filename, saved, dry_run: true, error_message, json_payload: saved ? null : JSON.stringify(payload), completed_at: new Date().toISOString() } }];\n"
+      },
+      "id": "82989e21-2bc4-42af-b481-f83eac442093",
+      "name": "JSON Save — sentence_patterns",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6080,
+        1120
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "={{ $('Settings').first().json.pinecone_index }}",
+          "mode": "id"
+        },
+        "options": {
+          "pineconeNamespace": "sentence_patterns"
+        }
+      },
+      "id": "4a4a1615-1053-492e-86c7-32951fca159f",
+      "name": "Pinecone Upload — sentence_patterns",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        6080,
+        1344
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "I7SepXgaJI7U1JPY",
+          "name": "PineconeApi account"
+        }
+      },
+      "disabled": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "text-embedding-3-small",
+          "cachedResultName": "text-embedding-3-small"
+        },
+        "options": {}
+      },
+      "id": "762170a9-a9c6-4676-bac1-f6942c550a05",
+      "name": "Embeddings OpenAI — sentence_patterns",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        6064,
+        1648
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Kvg7N4xgURBCjBT1",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Pipeline: sentence_patterns\nNamespace: `sentence_patterns` │ Granularity: `paragraph`\n\n**Chunker — sentence_patterns** fans out to:\n- PATH 1: Supabase insert\n- PATH 2: Dry Run If → [JSON Save │ Pinecone Upload]\n\nEmbeddings OpenAI sub-node embedded in Pinecone Upload node.",
+        "height": 200,
+        "width": 320,
+        "color": 5
+      },
+      "id": "5e6d510d-4546-4a6b-9f12-2839f69fed1d",
+      "name": "Sticky — 5b sentence_patterns",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        5696,
+        992
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================================\n// CHARACTER NAMES CHUNKER\n// Reads character_roster from Aggregator — CxC Branches output.\n// Creates one record per character: name + chapter appearances.\n// =============================================================\nconst item     = $input.first();\nconst settings = $('Settings').first().json;\nconst NS       = 'character_names';\nconst book_id  = settings.book_id;\n\nconst roster = item.json?.character_roster ?? [];\nif (roster.length === 0) { return []; }\n\nreturn roster.map((char, chunk_index) => {\n  const appearances = (char.chapter_appearances ?? []).sort((a, b) => a - b).join(', ');\n  const chunk_text = `${char.name} — Appears in chapters: ${appearances || 'unknown'}`;\n  const analysis_text = `Character: ${char.name}\\nChapter appearances: ${appearances || 'unknown'}\\nCharacter ID: ${char.character_id ?? ''}`;\n  return {\n    json: {\n      book_id,\n      namespace:       NS,\n      granularity:     'full_book',\n      chapter_number:  null,\n      paragraph_index: null,\n      chunk_index,\n      chunk_text,\n      analysis_text,\n    }\n  };\n});\n"
+      },
+      "id": "07ccfaf3-b2e3-4927-9ea4-a4cb685a136b",
+      "name": "Character Names Chunker",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3776,
+        2384
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "tableId": "analysis_results"
+      },
+      "id": "310734b0-9397-4c8a-880a-f5d0fa132ac0",
+      "name": "Supabase — character_names",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3776,
+        2608
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "0xIDWr3HHqnhT0wf",
+          "name": "Supabase - Book Analysis"
+        }
+      },
+      "disabled": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "dry-run-character_names",
+              "leftValue": "={{ $('Settings').first().json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f22563d7-1f98-41f1-af45-3fb28ed1b765",
+      "name": "Dry Run If — character_names",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        4224,
+        2384
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// JSON FILE SAVE — character_names (dry_run=true)\nconst allItems = $input.all();\nconst settings = $('Settings').first().json;\nconst NS       = 'character_names';\nconst chunks   = allItems.map(i => i.json);\nconst payload  = { book_id: settings.book_id, namespace: NS, chunk_count: chunks.length, vectors: chunks, saved_at: new Date().toISOString() };\nconst filename = `${settings.book_id}_${NS}.json`;\nlet saved = false;\nlet error_message = null;\ntry { const fs = require('fs'); fs.writeFileSync(filename, JSON.stringify(payload, null, 2)); saved = true; } catch (e) { error_message = String(e.message ?? e); }\nreturn [{ json: { namespace: NS, chunk_count: chunks.length, filename, saved, dry_run: true, error_message, json_payload: saved ? null : JSON.stringify(payload), completed_at: new Date().toISOString() } }];\n"
+      },
+      "id": "50c2c731-a861-45d0-8936-6ff691415a7d",
+      "name": "JSON Save — character_names",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4672,
+        2272
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "={{ $('Settings').first().json.pinecone_index }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "3ab556df-6f82-42e3-ae7b-2ec90fd5681a",
+      "name": "Pinecone Upload — character_names",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        4672,
+        2496
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "I7SepXgaJI7U1JPY",
+          "name": "PineconeApi account"
+        }
+      },
+      "disabled": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "text-embedding-3-small",
+          "cachedResultName": "text-embedding-3-small"
+        },
+        "options": {}
+      },
+      "id": "b5e8b3d9-d3e4-4140-9ce0-07948fa07d22",
+      "name": "Embeddings OpenAI — character_names",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        4672,
+        2672
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Kvg7N4xgURBCjBT1",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### Pipeline: character_names\nNamespace: `character_names` │ Granularity: `full_book`\n\nReads `character_roster` from **Aggregator — CxC Branches**.\nOne record per character: name + chapter appearances.\n\n**Character Names Chunker** fans out to:\n- PATH 1: Supabase — character_names\n- PATH 2: Dry Run If → [JSON Save │ Pinecone Upload]\n\nEmbeddings OpenAI sub-node embedded in Pinecone Upload node.",
+        "height": 240,
+        "width": 400,
+        "color": 5
+      },
+      "id": "a11d174e-56c6-47c4-89b5-fdc387c5b701",
+      "name": "Sticky — 5b character_names",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3776,
+        2160
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Section 5b: CxC + PxP + Character Names Pinecone Upload Pipelines\nEach Chunker fans out in parallel:\n\n**PATH 1** → Supabase (analysis backup, already wired)\n**PATH 2** → Dry Run If → [JSON File Save (dry_run=true) | Pinecone Upload (dry_run=false)]\n\nPipelines: `chapter_summaries` | `dialogue` | `characters` | `grammar` | `sentence_patterns` | `character_names`",
+        "height": 180,
+        "width": 2000,
+        "color": 6
+      },
+      "id": "13bab537-8e3b-4c67-a677-76c0d9b22ce7",
+      "name": "Sticky — Section 5b Header",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2864,
+        304
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.text }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "=book_id",
+                "value": "={{ $json.book_id }}"
+              },
+              {
+                "name": "=granularity",
+                "value": "={{ $json.granularity }}"
+              },
+              {
+                "name": "namespace",
+                "value": "={{ $json.namespace }}"
+              },
+              {
+                "name": "work_type",
+                "value": "={{ $json.work_type }}"
+              },
+              {
+                "name": "arc_type",
+                "value": "={{ $json.arc_type }}"
+              },
+              {
+                "name": "overall_tone",
+                "value": "={{ $json.overall_tone }}"
+              },
+              {
+                "name": "pov",
+                "value": "={{ $json.pov }}"
+              },
+              {
+                "name": "time_structure",
+                "value": "={{ $json.time_structure }}"
+              },
+              {
+                "name": "thematic_summary",
+                "value": "={{ $json.thematic_summary }}"
+              },
+              {
+                "name": "collection_structure",
+                "value": "={{ $json.collection_structure }}"
+              },
+              {
+                "name": "story_count",
+                "value": "={{ $json.story_count }}"
+              },
+              {
+                "name": "unifying_elements",
+                "value": "={{ $json.unifying_elements }}"
+              },
+              {
+                "name": "standout_title[0]",
+                "value": "={{ $json.standout_stories[0].title }}"
+              },
+              {
+                "name": "standout_reason[0]",
+                "value": "={{ $json.standout_stories[0].reason }}"
+              },
+              {
+                "name": "standout_title[1]",
+                "value": "={{ $json.standout_stories[1].title }}"
+              },
+              {
+                "name": "standout_reason[1]",
+                "value": "={{ $json.standout_stories[1].reason }}"
+              },
+              {
+                "name": "standout_title[2]",
+                "value": "={{ $json.standout_stories[2].title }}"
+              },
+              {
+                "name": "standout_reason[2]",
+                "value": "={{ $json.standout_stories[2].reason }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        2128,
+        5200
+      ],
+      "id": "faa18459-7e18-49d4-b050-792c93467b99",
+      "name": "Default Data Loader",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        3952,
+        2624
+      ],
+      "id": "3903a242-2c8f-4bbc-b812-d3b4c7f35f50",
+      "name": "Default Data Loader1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        3840,
+        2000
+      ],
+      "id": "70bb8484-0d52-44a6-ac3d-5f9f2cfe2f98",
+      "name": "Default Data Loader2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        3888,
+        1648
+      ],
+      "id": "8e0cae93-d8a9-4134-9127-636fea70ac9c",
+      "name": "Default Data Loader3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.chunk_text }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "book_id",
+                "value": "={{ $json.book_id }}"
+              },
+              {
+                "name": "namespace",
+                "value": "={{ $json.namespace }}"
+              },
+              {
+                "name": "granularity",
+                "value": "={{ $json.granularity }}"
+              },
+              {
+                "name": "chapter_number",
+                "value": "={{ $json.chapter_number }}"
+              },
+              {
+                "name": "chunk_index",
+                "value": "={{ $json.chunk_index }}"
+              },
+              {
+                "name": "chapter_summary",
+                "value": "={{ $json.chapter_summary }}"
+              },
+              {
+                "name": "chapter_tone",
+                "value": "={{ $json.chapter_tone }}"
+              },
+              {
+                "name": "pov",
+                "value": "={{ $json.pov }}"
+              },
+              {
+                "name": "key_events[0]",
+                "value": "={{ $json.key_events[0] }}"
+              },
+              {
+                "name": "key_events[1]",
+                "value": "={{ $json.key_events[1] }}"
+              },
+              {
+                "name": "key_events[2]",
+                "value": "={{ $json.key_events[2] }}"
+              },
+              {
+                "name": "key_events[3]",
+                "value": "={{ $json.key_events[3] }}"
+              },
+              {
+                "name": "chapter_function",
+                "value": "={{ $json.chapter_function }}"
+              },
+              {
+                "name": "=opening_hook",
+                "value": "={{ $json.opening_hook }}"
+              },
+              {
+                "name": "closing_beat",
+                "value": "={{ $json.closing_beat }}"
+              },
+              {
+                "name": "universal_fantasy",
+                "value": "={{ $json.universal_fantasy }}"
+              },
+              {
+                "name": "core_tropes[0]",
+                "value": "={{ $json.core_tropes[0] }}"
+              },
+              {
+                "name": "core_tropes[1]",
+                "value": "={{ $json.core_tropes[1] }}"
+              },
+              {
+                "name": "core_tropes[2]",
+                "value": "={{ $json.core_tropes[2] }}"
+              },
+              {
+                "name": "core_tropes[3]",
+                "value": "={{ $json.core_tropes[3] }}"
+              },
+              {
+                "name": "emotional_arc",
+                "value": "={{ $json.emotional_arc }}"
+              },
+              {
+                "name": "tension_mechanism",
+                "value": "={{ $json.tension_mechanism }}"
+              },
+              {
+                "name": "prose_style",
+                "value": "={{ $json.prose_style }}"
+              },
+              {
+                "name": "generation_prompt",
+                "value": "={{ $json.generation_prompt }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        4016,
+        1152
+      ],
+      "id": "b355658b-f49f-4cae-aa2d-72f72669b690",
+      "name": "Default Data Loader4"
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.text }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "motif[0]",
+                "value": "={{ $json.symbolic_motifs[0].motif }}"
+              },
+              {
+                "name": "motif_represents[0]",
+                "value": "={{ $json.symbolic_motifs[0].represents }}"
+              },
+              {
+                "name": "motif[1]",
+                "value": "={{ $json.symbolic_motifs[1].motif }}"
+              },
+              {
+                "name": "motif_represents[1]",
+                "value": "={{ $json.symbolic_motifs[1].represents }}"
+              },
+              {
+                "name": "motif[2]",
+                "value": "={{ $json.symbolic_motifs[2].motif }}"
+              },
+              {
+                "name": "motif_represents[2]",
+                "value": "={{ $json.symbolic_motifs[2].represents }}"
+              },
+              {
+                "name": "motif[3]",
+                "value": "={{ $json.symbolic_motifs[3].motif }}"
+              },
+              {
+                "name": "motif_represents[3]",
+                "value": "={{ $json.symbolic_motifs[3].represents }}"
+              },
+              {
+                "name": "thematic_tone",
+                "value": "={{ $json.thematic_tone }}"
+              },
+              {
+                "name": "audience_takeaway",
+                "value": "={{ $json.audience_takeaway }}"
+              },
+              {
+                "name": "theme_development",
+                "value": "={{ $json.theme_development }}"
+              },
+              {
+                "name": "thematic_summary",
+                "value": "={{ $json.thematic_summary }}"
+              },
+              {
+                "name": "primary_theme",
+                "value": "={{ $json.primary_theme }}"
+              },
+              {
+                "name": "granularity",
+                "value": "={{ $json.granularity }}"
+              },
+              {
+                "name": "book_id",
+                "value": "={{ $json.book_id }}"
+              },
+              {
+                "name": "secondary_themes[0]",
+                "value": "={{ $json.secondary_themes[0] }}"
+              },
+              {
+                "name": "secondary_themes[1]",
+                "value": "={{ $json.secondary_themes[1] }}"
+              },
+              {
+                "name": "secondary_themes[2]",
+                "value": "={{ $json.secondary_themes[2] }}"
+              },
+              {
+                "name": "secondary_themes[3]",
+                "value": "={{ $json.secondary_themes[3] }}"
+              },
+              {
+                "name": "namespace",
+                "value": "={{ $json.namespace }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        2528,
+        5984
+      ],
+      "id": "e2084d0b-e662-4b0d-8cb0-4fc0ffa83c91",
+      "name": "Default Data Loader5"
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.text }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "book_id",
+                "value": "={{ $json.book_id }}"
+              },
+              {
+                "name": "namespace",
+                "value": "={{ $json.namespace }}"
+              },
+              {
+                "name": "granularity",
+                "value": "={{ $json.granularity }}"
+              },
+              {
+                "name": "pace_summary",
+                "value": "={{ $json.pace_summary }}"
+              },
+              {
+                "name": "tension_build",
+                "value": "={{ $json.tension_build }}"
+              },
+              {
+                "name": "scene_balance",
+                "value": "={{ $json.scene_balance }}"
+              },
+              {
+                "name": "chapter_pacing",
+                "value": "={{ $json.chapter_pacing }}"
+              },
+              {
+                "name": "climax_placement",
+                "value": "={{ $json.climax_placement }}"
+              },
+              {
+                "name": "pacing_techniques[0]",
+                "value": "={{ $json.pacing_techniques[0] }}"
+              },
+              {
+                "name": "pacing_techniques[1]",
+                "value": "={{ $json.pacing_techniques[1] }}"
+              },
+              {
+                "name": "pacing_techniques[2]",
+                "value": "={{ $json.pacing_techniques[2] }}"
+              },
+              {
+                "name": "pacing_techniques[3]",
+                "value": "={{ $json.pacing_techniques[3] }}"
+              },
+              {
+                "name": "reader_experience",
+                "value": "={{ $json.reader_experience }}"
+              },
+              {
+                "name": "overall_pace",
+                "value": "={{ $json.overall_pace }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        2368,
+        6848
+      ],
+      "id": "f30fba7d-c4e5-4c77-a67a-b3d98348e8bd",
+      "name": "Default Data Loader6",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        6288,
+        1648
+      ],
+      "id": "2ee4650a-1471-4323-9f89-a2a027cff8cf",
+      "name": "Default Data Loader7",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        4880,
+        2784
+      ],
+      "id": "f85e6374-7db4-4429-ad96-0f4df5ee55d2",
+      "name": "Default Data Loader8",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Text:\n{{ $json.book_text }}\n\nBook ID: {{ $json.book_id }}\nGranularity: {{ $json.granularity }}\nChapter: {{ $json.chapter_number ?? 'N/A' }}\nParagraph: {{ $json.paragraph_index ?? 'N/A' }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert literary analyst specializing in narrative structure. You will receive the full text of a book — which may be a single narrative, a short story collection, a fairy tale anthology, or a collection of loosely connected stories (e.g. Dubliners, Winesburg Ohio).\n\nFirst determine whether the work is a SINGLE NARRATIVE or a COLLECTION, then analyze accordingly.\n\nFor ALL works analyze:\n- arc_type: The structural model that best describes the work. For single narratives use models like \"Hero's Journey\", \"Freytag's Pyramid\", \"In Medias Res\", \"Kishōtenketsu\". For collections use \"Anthology\", \"Cycle\" (stories share world/characters), \"Frame Narrative\" (stories nested within a wrapper), \"Composite Novel\" (stories form a larger arc when read together)\n- overall_tone: The dominant emotional register (e.g. \"gothic horror\", \"melancholic realism\", \"dark comedy\")\n- pov: The dominant narrative point of view, or note if it varies across stories\n- time_structure: How time is handled (e.g. \"linear\", \"non-linear\", \"varies by story\")\n- thematic_summary: 2-3 sentences on the central themes of the work as a whole\n\nFor SINGLE NARRATIVES also analyze:\n- exposition: How the world, characters, and situation are established\n- rising_action: Key events and escalating tension building toward the climax\n- climax: The turning point or moment of highest tension\n- falling_action: How events resolve after the climax\n- resolution: The final state of the world/characters and thematic conclusions\n\nFor COLLECTIONS also analyze:\n- collection_structure: How the stories relate to each other (e.g. \"thematically linked\", \"shared setting\", \"recurring characters\", \"framed by narrator\")\n- story_count: Number of distinct stories or sections\n- unifying_elements: What holds the collection together (theme, place, character type, tone)\n- standout_stories: 1-3 story titles that best exemplify the collection's central concerns, with a one-sentence reason each\n\nIMPORTANT OUTPUT RULES:\n- work_type MUST always be either \"single_narrative\" or \"collection\" — never omit it\n- arc_type, overall_tone, pov, time_structure, and thematic_summary MUST always be present\n- For single narratives, set collection_structure, story_count, unifying_elements, and standout_stories to null\n- For collections, set exposition, rising_action, climax, falling_action, and resolution to null\n- Never omit a field entirely — always include it with null if not applicable\n- standout_stories must always be an array — use empty array [] if not applicable\n\nReturn ONLY valid JSON. No explanation, markdown, or commentary outside the JSON."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        496,
+        4912
+      ],
+      "id": "a6201b63-7709-4928-b59f-7a74b00ea539",
+      "name": "Full Book AI — narrative_arc",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        5152
+      ],
+      "id": "6b7093ea-46d5-4ea3-a4df-6e1dc8408bd4",
+      "name": "LM — Full Book AI — narrative_arc",
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"work_type\": { \"type\": \"string\", \"enum\": [\"single_narrative\", \"collection\"] },\n    \"arc_type\": { \"type\": \"string\" },\n    \"overall_tone\": { \"type\": \"string\" },\n    \"pov\": { \"type\": \"string\" },\n    \"time_structure\": { \"type\": \"string\" },\n    \"thematic_summary\": { \"type\": \"string\" },\n    \"exposition\": { \"type\": [\"string\", \"null\"] },\n    \"rising_action\": { \"type\": [\"string\", \"null\"] },\n    \"climax\": { \"type\": [\"string\", \"null\"] },\n    \"falling_action\": { \"type\": [\"string\", \"null\"] },\n    \"resolution\": { \"type\": [\"string\", \"null\"] },\n    \"collection_structure\": { \"type\": [\"string\", \"null\"] },\n    \"story_count\": { \"type\": [\"number\", \"null\"] },\n    \"unifying_elements\": { \"type\": [\"string\", \"null\"] },\n    \"standout_stories\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"title\": { \"type\": \"string\" },\n          \"reason\": { \"type\": \"string\" }\n        },\n        \"required\": [\"title\", \"reason\"]\n      }\n    }\n  },\n  \"required\": [\n    \"work_type\", \"arc_type\", \"overall_tone\", \"pov\", \"time_structure\", \"thematic_summary\",\n    \"exposition\", \"rising_action\", \"climax\", \"falling_action\", \"resolution\",\n    \"collection_structure\", \"story_count\", \"unifying_elements\", \"standout_stories\"\n  ]\n}",
+        "autoFix": true
+      },
+      "id": "2cc9f2a9-ab62-4a4b-ad74-7568685e44c1",
+      "name": "Parser — Full Book AI — narrative_arc",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        608,
+        5168
+      ],
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following text and return your analysis as JSON.\n\nText:\n{{ $json.book_text }}\n\nBook ID: {{ $json.book_id }}\nGranularity: {{ $json.granularity }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert literary analyst specializing in thematic analysis. You will receive the full text of a book — which may be a single narrative, a short story collection, a fairy tale anthology, or a collection of loosely connected stories.\n\nAnalyze the themes present in the work across these exact dimensions:\n\n- primary_theme: The single most dominant theme — a concise phrase (e.g. \"guilt and supernatural retribution\")\n- secondary_themes: Exactly 3-5 additional significant themes, each as a concise phrase\n- thematic_summary: 2-3 sentences on how the themes work together and what the work is ultimately saying\n- theme_development: How themes are developed — do they build, repeat, contrast, or evolve across the work?\n- symbolic_motifs: 2-4 recurring symbols or motifs that carry thematic weight — for each provide the motif name and what it represents\n- thematic_tone: The emotional register through which themes are delivered (e.g. \"moralistic\", \"nihilistic\", \"ambivalent\", \"cautionary\")\n- audience_takeaway: The central message or feeling a reader is likely to take away\n\nFor collections, analyze themes across the whole work, noting where individual stories reinforce or complicate the central themes.\n\nSTRICT OUTPUT RULES:\n- Return ONLY valid JSON — no explanation, markdown, or text outside the JSON\n- Every field MUST be present — never omit any field\n- secondary_themes MUST be an array of strings — minimum 3, maximum 5\n- symbolic_motifs MUST be an array of objects, each with exactly \"motif\" and \"represents\" keys — minimum 2, maximum 4\n- All string fields must be non-empty"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        416,
+        5760
+      ],
+      "id": "d8d5d557-4b7e-4ef0-8fb9-48d25a187ad0",
+      "name": "Full Book AI — themes",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "={{ $json.claude_model }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        5968
+      ],
+      "id": "30173f72-4403-4622-ab33-06f2d641d623",
+      "name": "LM — Full Book AI — themes",
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following text and return your analysis as JSON.\n\nText:\n{{ $json.book_text }}\n\nBook ID: {{ $json.book_id }}\nGranularity: {{ $json.granularity }}\nChapter: {{ $json.chapter_number ?? 'N/A' }}\nParagraph: {{ $json.paragraph_index ?? 'N/A' }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an expert literary analyst specializing in narrative pacing and rhythm. You will receive the full text of a book — which may be a single narrative, a short story collection, a fairy tale anthology, or a collection of loosely connected stories.\n\nAnalyze the pacing and rhythm of the work across these exact dimensions:\n\n- overall_pace: The dominant pace of the work as a single descriptor (e.g. \"slow-burn\", \"relentless\", \"varied\", \"measured\", \"frenetic\")\n- pace_summary: 2-3 sentences describing how pacing functions across the work as a whole and what effect it creates for the reader\n- tension_build: How tension is constructed and released — does it escalate steadily, arrive in sudden bursts, reset between stories, or accumulate across the work?\n- scene_balance: The ratio and relationship between action scenes, dialogue scenes, and descriptive/atmospheric passages — which dominates and how do they alternate?\n- chapter_pacing: For single narratives, how pace shifts between chapters. For collections, how pace varies between stories — note which feel fastest or slowest and why\n- climax_placement: Where the emotional or narrative peak falls — early, late, distributed, or at the end of each story for collections\n- pacing_techniques: 2-4 specific craft techniques the author uses to control pace (e.g. \"short declarative sentences during action\", \"extended atmospheric description to build dread\", \"dialogue interruptions to slow momentum\")\n- reader_experience: The cumulative emotional experience the pacing creates for a reader moving through the full work\n\nFor collections, analyze pacing at both the individual story level and the collection level — note how the ordering of stories affects overall rhythm.\n\nSTRICT OUTPUT RULES:\n- Return ONLY valid JSON — no explanation, markdown, or text outside the JSON\n- Every field MUST be present — never omit any field\n- pacing_techniques MUST be an array of strings — minimum 2, maximum 4\n- All string fields must be non-empty"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        32,
+        6496
+      ],
+      "id": "05a48b21-da21-4c58-86a1-26b4929d608b",
+      "name": "Full Book AI — pacing",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        6800
+      ],
+      "id": "0ffc3ce4-78fe-4d0c-82a5-208448406929",
+      "name": "LM — Full Book AI — pacing",
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following text and return your analysis as JSON.\n\nText:\n{{ $json.chapter_text }}\n\nBook ID: {{ $json.book_id }}\nGranularity: {{ $json.granularity }}\nChapter: {{ $json.chapter_number ?? 'N/A' }}\nParagraph: {{ $json.paragraph_index ?? 'N/A' }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert literary analyst and creative writing strategist. You will receive a single chapter or story section from a book. Analyze it across two dimensions: literary analysis and reverse-engineered creative prompting.\n\nLITERARY ANALYSIS — analyze these exact dimensions:\n\n- chapter_summary: 2-3 sentences summarizing what happens in this chapter\n- chapter_tone: The dominant emotional register of this chapter (e.g. \"mounting dread\", \"bittersweet\", \"darkly comic\")\n- pov: The narrative point of view used in this chapter\n- key_events: The 2-4 most significant plot events, each as a concise phrase\n- chapter_function: The narrative role this chapter plays (e.g. \"inciting incident\", \"rising action\", \"climax\", \"denouement\", \"character introduction\")\n- opening_hook: How the chapter opens — what technique is used to draw the reader in\n- closing_beat: How the chapter ends — what emotional or narrative note it closes on\n\nREVERSE-ENGINEERING — analyze these exact dimensions to help generate original inspired content:\n\n- universal_fantasy: The deep human desire or fear this chapter taps into (e.g. \"fear of being trapped and unable to escape\", \"desire for justice against the corrupt\", \"terror of confronting one's own evil\")\n- core_tropes: 2-4 genre or narrative tropes present (e.g. \"the haunted house\", \"the fatal prophecy\", \"the doppelganger\", \"the unreliable environment\")\n- emotional_arc: The emotional journey the reader experiences from first to last paragraph — what feeling does it start with and what feeling does it end with\n- tension_mechanism: The specific technique used to generate and sustain tension (e.g. \"environmental dread building to supernatural revelation\", \"dramatic irony where reader knows more than protagonist\")\n- prose_style: Key stylistic features of the writing (e.g. \"long atmospheric sentences punctuated by short shocks\", \"formal Victorian register with Gothic imagery\")\n- - generation_prompt: A detailed creative writing prompt — 3-5 sentences — that would inspire an AI to write an ORIGINAL fictional chapter with similar emotional effect, universal fantasy, tropes, and structural approach, but completely different characters, setting, and plot. This must be a GENERATION prompt, not an analysis prompt — it must describe what to write, not what to examine. It must never reference the source text, author name, character names, or any specific plot details from this chapter. It must always begin with the exact words \"Write a chapter in which\" and continue with concrete scene, character situation, and emotional instruction.\n\nHANDLING PARATEXTUAL CONTENT (prefaces, forewords, dedications, tables of contents, author's notes):\nIf the text you receive is paratextual rather than narrative, do not refuse analysis — analyze what is actually there. These sections carry real literary value:\n\n- chapter_summary: Describe what the paratextual element does — what the author declares their intent to be, what emotional contract they're making with the reader, or what the structure signals about the work to follow\n- chapter_tone: The register the author adopts to address the reader (e.g. \"intimate and earnest\", \"formal and solemn\")\n- pov: How the author positions themselves (e.g. \"first-person authorial direct address\")\n- key_events: The 2-4 most significant things the paratextual content establishes or signals\n- chapter_function: \"Paratextual framing — establishes [tone/theme/genre/reader relationship] before the narrative begins\"\n- opening_hook and closing_beat: How the paratextual section opens and closes its relationship with the reader\n- universal_fantasy: What deep human desire or promise the framing invokes in the reader\n- core_tropes: Genre or structural conventions being signaled\n- emotional_arc and tension_mechanism: How the author builds anticipation or establishes stakes before the story begins\n- prose_style: The author's stylistic register in this framing material\n- generation_prompt: Write a prompt for an original fictional work's opening framing device — a preface, dedication, or author's note that establishes a similar emotional promise or thematic contract with the reader. Begin with \"Write a chapter in which...\"\n\nHANDLING PARATEXTUAL CONTENT (prefaces, forewords, dedications, tables of contents, author's notes):\nIf the text you receive is paratextual rather than narrative, do not refuse analysis — analyze what is actually there. These sections carry real literary value:\n\n- chapter_summary: Describe what the paratextual element does — what the author declares their intent to be, what emotional contract they're making with the reader, or what the structure signals about the work to follow\n- chapter_tone: The register the author adopts to address the reader (e.g. \"intimate and earnest\", \"formal and solemn\")\n- pov: How the author positions themselves (e.g. \"first-person authorial direct address\")\n- key_events: The 2-4 most significant things the paratextual content establishes or signals\n- chapter_function: \"Paratextual framing — establishes [tone/theme/genre/reader relationship] before the narrative begins\"\n- opening_hook and closing_beat: How the paratextual section opens and closes its relationship with the reader\n- universal_fantasy: What deep human desire or promise the framing invokes in the reader\n- core_tropes: Genre or structural conventions being signaled\n- emotional_arc and tension_mechanism: How the author builds anticipation or establishes stakes before the story begins\n- prose_style: The author's stylistic register in this framing material\n- generation_prompt: Write a prompt for an original fictional work's opening framing device — a preface, dedication, or author's note that establishes a similar emotional promise or thematic contract with the reader. Begin with \"Write a chapter in which...\"\n\nSTRICT OUTPUT RULES:\n- Return ONLY valid JSON — no explanation, markdown, or text outside the JSON\n- Every field MUST be present — never omit any field\n- key_events MUST be an array of strings — minimum 2, maximum 4\n- core_tropes MUST be an array of strings — minimum 2, maximum 4\n- All string fields must be non-empty\n- generation_prompt must begin with \"Write a chapter in which\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1136,
+        640
+      ],
+      "id": "41a016b3-9964-45fc-bc6e-dea19b745adc",
+      "name": "CxC AI — chapter_summaries"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        960,
+        928
+      ],
+      "id": "5f1c264e-ec80-48ec-86e4-2b0abe55d2c5",
+      "name": "LM — CxC AI — chapter_summaries",
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"chapter_summary\": { \"type\": \"string\" },\n    \"chapter_tone\": { \"type\": \"string\" },\n    \"pov\": { \"type\": \"string\" },\n    \"key_events\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"minItems\": 2,\n      \"maxItems\": 4\n    },\n    \"chapter_function\": { \"type\": \"string\" },\n    \"opening_hook\": { \"type\": \"string\" },\n    \"closing_beat\": { \"type\": \"string\" },\n    \"universal_fantasy\": { \"type\": \"string\" },\n    \"core_tropes\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"minItems\": 2,\n      \"maxItems\": 4\n    },\n    \"emotional_arc\": { \"type\": \"string\" },\n    \"tension_mechanism\": { \"type\": \"string\" },\n    \"prose_style\": { \"type\": \"string\" },\n    \"generation_prompt\": { \"type\": \"string\" }\n  },\n  \"required\": [\n    \"chapter_summary\",\n    \"chapter_tone\",\n    \"pov\",\n    \"key_events\",\n    \"chapter_function\",\n    \"opening_hook\",\n    \"closing_beat\",\n    \"universal_fantasy\",\n    \"core_tropes\",\n    \"emotional_arc\",\n    \"tension_mechanism\",\n    \"prose_style\",\n    \"generation_prompt\"\n  ]\n}",
+        "autoFix": true
+      },
+      "id": "cafe26fc-9861-436e-a546-87a9e4f78ecb",
+      "name": "Parser — CxC AI — chapter_summaries",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1264,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following text and return your analysis as JSON.\n\nText:\n{{ $json.chapter_text }}\n\nBook ID: {{ $json.book_id }}\nGranularity: {{ $json.granularity }}\nChapter: {{ $json.chapter_number ?? 'N/A' }}\nParagraph: {{ $json.paragraph_index ?? 'N/A' }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Placeholder"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1264,
+        1104
+      ],
+      "id": "7f05df3e-f400-4780-abd7-b8954a0b9871",
+      "name": "CxC AI — dialogue",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1088,
+        1392
+      ],
+      "id": "a709d072-c609-449c-b36e-741d30e5fd67",
+      "name": "LM — CxC AI — dialogue",
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\": \"object\", \"properties\": {\"has_dialogue\": {\"type\": \"boolean\"}, \"speaker_count\": {\"type\": \"number\"}, \"dialogue_excerpts\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}, \"dialogue_purpose\": {\"type\": \"string\"}}, \"required\": [\"has_dialogue\", \"speaker_count\", \"dialogue_purpose\"]}"
+      },
+      "id": "7b833712-49c7-4f41-8598-60d11335806e",
+      "name": "Parser — CxC AI — dialogue",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1488,
+        1328
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following text and return your analysis as JSON.\n\nText:\n{{ $json.chapter_text }}\n\nBook ID: {{ $json.book_id }}\nGranularity: {{ $json.granularity }}\nChapter: {{ $json.chapter_number ?? 'N/A' }}\nParagraph: {{ $json.paragraph_index ?? 'N/A' }}",
+        "options": {
+          "systemMessage": "Placeholder"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1216,
+        1520
+      ],
+      "id": "1d2a5111-3038-406e-8376-18c4e0176803",
+      "name": "CxC AI — characters",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        912,
+        1728
+      ],
+      "id": "de80c7d6-f114-416d-8319-98518ab5b0a3",
+      "name": "LM — CxC AI — characters",
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\": \"object\", \"properties\": {\"characters\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"properties\": {\"name\": {\"type\": \"string\"}, \"role\": {\"type\": \"string\"}, \"description\": {\"type\": \"string\"}}, \"required\": [\"name\", \"role\", \"description\"]}}}, \"required\": [\"characters\"]}"
+      },
+      "id": "f43645b0-d70e-43e2-b4c9-da62e7c39376",
+      "name": "Parser — CxC AI — characters",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1488,
+        1568
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following text and return your analysis as JSON.\n\nText:\n{{ $json.chapter_text }}\n\nBook ID: {{ $json.book_id }}\nGranularity: {{ $json.granularity }}\nChapter: {{ $json.chapter_number ?? 'N/A' }}\nParagraph: {{ $json.paragraph_index ?? 'N/A' }}",
+        "options": {
+          "systemMessage": "Placeholder"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1168,
+        1776
+      ],
+      "id": "f974b4f6-c980-4b3c-a45a-918a1c3086e5",
+      "name": "CxC AI — grammar",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1136,
+        1936
+      ],
+      "id": "1f0af109-9f83-4340-a424-8e505368fcff",
+      "name": "LM — CxC AI — grammar",
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\": \"object\", \"properties\": {\"sentence_complexity\": {\"type\": \"string\"}, \"avg_sentence_length\": {\"type\": \"number\"}, \"passive_voice_count\": {\"type\": \"number\"}, \"notes\": {\"type\": \"string\"}}, \"required\": [\"sentence_complexity\", \"avg_sentence_length\", \"notes\"]}"
+      },
+      "id": "9c1612bf-636b-4ffd-9f2b-6adc28b5a2d8",
+      "name": "Parser — CxC AI — grammar",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1376,
+        1888
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "=Analyze the following text and return your analysis as JSON.\n\nText:\n{{ $json.paragraph_text }}\n\nBook ID: {{ $json.book_id }}\nGranularity: {{ $json.granularity }}\nChapter: {{ $json.chapter_number ?? 'N/A' }}\nParagraph: {{ $json.paragraph_index ?? 'N/A' }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "058dcee0-fb61-45b7-a683-a249b314fff0",
+      "name": "Claude — sentence_patterns",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        3264,
+        1040
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "={{ $('Settings').first().json.claude_model }}",
+        "options": {}
+      },
+      "id": "bfb5f323-34bc-4bb9-9ac3-dae262e8c0db",
+      "name": "LM — Claude — sentence_patterns",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        3152,
+        1312
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\": \"object\", \"properties\": {\"dominant_pattern\": {\"type\": \"string\"}, \"rhythm\": {\"type\": \"string\"}, \"stylistic_notes\": {\"type\": \"string\"}, \"pattern_examples\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"required\": [\"dominant_pattern\", \"rhythm\", \"stylistic_notes\", \"pattern_examples\"]}"
+      },
+      "id": "ac46c10d-abf7-4c60-870e-5bba284f17cd",
+      "name": "Parser — Claude — sentence_patterns",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        3424,
+        1264
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"primary_theme\": { \"type\": \"string\" },\n    \"secondary_themes\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"minItems\": 3,\n      \"maxItems\": 5\n    },\n    \"thematic_summary\": { \"type\": \"string\" },\n    \"theme_development\": { \"type\": \"string\" },\n    \"symbolic_motifs\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"motif\": { \"type\": \"string\" },\n          \"represents\": { \"type\": \"string\" }\n        },\n        \"required\": [\"motif\", \"represents\"]\n      },\n      \"minItems\": 2,\n      \"maxItems\": 4\n    },\n    \"thematic_tone\": { \"type\": \"string\" },\n    \"audience_takeaway\": { \"type\": \"string\" }\n  },\n  \"required\": [\n    \"primary_theme\",\n    \"secondary_themes\",\n    \"thematic_summary\",\n    \"theme_development\",\n    \"symbolic_motifs\",\n    \"thematic_tone\",\n    \"audience_takeaway\"\n  ]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        6064
+      ],
+      "id": "ae517cb0-43d3-418d-b5bf-4d481da4c5a6",
+      "name": "Structured Output Parser",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"overall_pace\": { \"type\": \"string\" },\n    \"pace_summary\": { \"type\": \"string\" },\n    \"tension_build\": { \"type\": \"string\" },\n    \"scene_balance\": { \"type\": \"string\" },\n    \"chapter_pacing\": { \"type\": \"string\" },\n    \"climax_placement\": { \"type\": \"string\" },\n    \"pacing_techniques\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"minItems\": 2,\n      \"maxItems\": 4\n    },\n    \"reader_experience\": { \"type\": \"string\" }\n  },\n  \"required\": [\n    \"overall_pace\",\n    \"pace_summary\",\n    \"tension_build\",\n    \"scene_balance\",\n    \"chapter_pacing\",\n    \"climax_placement\",\n    \"pacing_techniques\",\n    \"reader_experience\"\n  ]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        6736
+      ],
+      "id": "fe7a5f42-c474-4df8-8eaf-60523bfa618f",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        6944
+      ],
+      "id": "5d194418-aee4-4fff-9684-acab8a210d8b",
+      "name": "Anthropic Chat Model1",
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        752,
+        5440
+      ],
+      "id": "50a654aa-1423-407b-aa35-f16224250ad4",
+      "name": "Anthropic Chat Model2",
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1472,
+        976
+      ],
+      "id": "c0fa717d-c988-46dc-8504-c0d8d5e3a9f1",
+      "name": "Anthropic Chat Model3",
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $('Settings').first().json.text\n  || $input.first().json.text \n  || $input.first().json.chapter_text\n  || $input.first().json.book_text\n  || $input.first().json.data\n  || $input.first().json.content\n  || '';\n\nlet text = raw.replace(/\\r\\n/g, '\\n').replace(/\\r/g, '\\n');\n\n// Strip Gutenberg HEADER — everything up to and including the START marker\nconst gutenbergStart = text.search(/\\*{3}\\s*START OF (THE |THIS )?PROJECT GUTENBERG/i);\nif (gutenbergStart > -1) text = text.slice(text.indexOf('\\n', gutenbergStart) + 1).trim();\n\n// Strip Gutenberg FOOTER\nconst gutenbergEnd = text.search(\n  /\\*{3}\\s*END OF (THE |THIS )?PROJECT GUTENBERG|\\bEnd of (the )?Project Gutenberg|\\bEnd of this Project Gutenberg|\\bProduced by /i\n);\nif (gutenbergEnd > -1) text = text.slice(0, gutenbergEnd).trim();\n\nconst settings = $('Settings').first().json;\n\nconst BLOCKLIST = /gutenberg|license|copyright|permission|distribute|trademark|donate|foundation|project pg/i;\nconst NAMED = /^(Chapter|CHAPTER|Stave|STAVE|Part|PART)[\\t ]+(\\d+|[IVXLCDM]+)|^(Preface|PREFACE|Introduction|INTRODUCTION|Prologue|PROLOGUE|Epilogue|EPILOGUE|Interlude|INTERLUDE|Foreword|FOREWORD|Afterword|AFTERWORD|Appendix|APPENDIX)/;\nconst TITLE_CASE = /^[A-Z][A-Za-z\\u2018\\u2019'\\-]*(?:[ \\t]+[A-Za-z\\u2018\\u2019'\\-]+){0,6}$/;\n\nconst lines = text.split('\\n');\nconst matches = [];\n\nfor (let i = 0; i < lines.length; i++) {\n  const line = lines[i].trim();\n  if (!line || BLOCKLIST.test(line)) continue;\n  if (line.endsWith('.') || line.endsWith(',') || line.endsWith(';')) continue;\n  const isNamed = NAMED.test(line);\n  const isTitleCase = TITLE_CASE.test(line);\n  if (!isNamed && !isTitleCase) continue;\n  if (!isNamed && i > 0 && lines[i - 1].trim() !== '') continue;\n\n  // Check the last non-empty line before this heading.\n  // If it ends with , : or ; the \"heading\" is mid-paragraph context — skip it.\n  let prevContent = '';\n  for (let j = i - 1; j >= 0; j--) {\n    const prev = lines[j].trim();\n    if (prev) { prevContent = prev; break; }\n  }\n  if (prevContent && /[,;:]$/.test(prevContent)) continue;\n\n  const offset = lines.slice(0, i).reduce((acc, l) => acc + l.length + 1, 0);\n  matches.push({ index: offset, heading: line });\n}\n\nif (matches.length === 0) {\n  return [{\n    json: {\n      ...settings,\n      granularity: 'chapter',\n      chapter_number: 1,\n      chapter_heading: 'Full Text (no chapters detected)',\n      chapter_text: text.trim(),\n      text: text.trim(),\n      word_count: text.trim().split(/\\s+/).filter(Boolean).length,\n      _debug_input_length: text.length,\n      _debug_first_100: text.slice(0, 100)\n    }\n  }];\n}\n\n// Build raw sections\nconst sections = matches.map((match, i) => {\n  const start = match.index;\n  const end = i + 1 < matches.length ? matches[i + 1].index : text.length;\n  const chapter_text = text.slice(start, end).trim();\n  return { heading: match.heading, chapter_text, word_count: chapter_text.split(/\\s+/).filter(Boolean).length };\n});\n\n// Merge sections under 50 words into the previous section\nconst merged = [];\nfor (const section of sections) {\n  if (section.word_count < 300 && merged.length > 0) {\n    const prev = merged[merged.length - 1];\n    prev.chapter_text += '\\n\\n' + section.chapter_text;\n    prev.word_count = prev.chapter_text.split(/\\s+/).filter(Boolean).length;\n  } else {\n    merged.push(section);\n  }\n}\n\nreturn merged.map((section, i) => ({\n  json: {\n    ...settings,\n    granularity: 'chapter',\n    chapter_number: i + 1,\n    chapter_heading: section.heading,\n    chapter_text: section.chapter_text,\n    text: section.chapter_text,\n    word_count: section.word_count\n  }\n}));"
+      },
+      "id": "75520bb1-d1bb-4275-b0a1-9ccd8a2f0e06",
+      "name": "CxC Splitter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $('Settings').first().json.text\n  || $input.first().json.text \n  || $input.first().json.chapter_text\n  || $input.first().json.book_text\n  || $input.first().json.data\n  || $input.first().json.content\n  || '';\n\nlet text = raw.replace(/\\r\\n/g, '\\n').replace(/\\r/g, '\\n');\n\n// Strip Gutenberg footer\nconst gutenbergEnd = text.search(\n  /(\\*{3}\\s*END OF (THE |THIS )?PROJECT GUTENBERG)|(\\bEnd of (the )?Project Gutenberg)|(\\bEnd of this Project Gutenberg)|(\\bProduced by )|(\\*\\*\\* START OF TH)/i\n);\nif (gutenbergEnd > -1) text = text.slice(0, gutenbergEnd).trim();\n\nconst settings = $('Settings').first().json;\n\nconst BLOCKLIST = /gutenberg|license|copyright|permission|distribute|trademark|donate|foundation|project pg/i;\nconst NAMED = /^(Chapter|CHAPTER|Part|PART)[\\t ]+(\\d+|[IVXLCDM]+)|^(Preface|PREFACE|Introduction|INTRODUCTION|Prologue|PROLOGUE|Epilogue|EPILOGUE|Interlude|INTERLUDE|Foreword|FOREWORD|Afterword|AFTERWORD|Appendix|APPENDIX)/;\nconst TITLE_CASE = /^[A-Z][A-Za-z\\u2018\\u2019'\\-]*(?:[ \\t]+[A-Za-z\\u2018\\u2019'\\-]+){0,6}$/;\n\nconst lines = text.split('\\n');\nconst chapterOffsets = [];\n\nfor (let i = 0; i < lines.length; i++) {\n  const line = lines[i].trim();\n  if (!line || BLOCKLIST.test(line)) continue;\n  if (line.endsWith('.') || line.endsWith(',') || line.endsWith(';')) continue;\n  const isNamed = NAMED.test(line);\n  const isTitleCase = TITLE_CASE.test(line);\n  if (!isNamed && !isTitleCase) continue;\n  if (!isNamed && i > 0 && lines[i - 1].trim() !== '') continue;\n\n  // Skip if previous non-empty line ends with , : or ; (mid-paragraph context)\n  let prevContent = '';\n  for (let j = i - 1; j >= 0; j--) {\n    const prev = lines[j].trim();\n    if (prev) { prevContent = prev; break; }\n  }\n  if (prevContent && /[,;:]$/.test(prevContent)) continue;\n\n  const offset = lines.slice(0, i).reduce((acc, l) => acc + l.length + 1, 0);\n  chapterOffsets.push({ chapter_number: chapterOffsets.length + 1, index: offset });\n}\n\nconst chapters = chapterOffsets.length > 0\n  ? chapterOffsets.map((ch, i) => ({\n      chapter_number: ch.chapter_number,\n      start: ch.index,\n      end: i + 1 < chapterOffsets.length ? chapterOffsets[i + 1].index : text.length\n    }))\n  : [{ chapter_number: 1, start: 0, end: text.length }];\n\nconst results = [];\nlet realChapterNumber = 0;\n\nfor (const chapter of chapters) {\n  const chapterText = text.slice(chapter.start, chapter.end);\n  const paragraphs = chapterText\n    .split(/\\n{2,}/)\n    .map(p => p.replace(/\\n/g, ' ').trim())\n    .filter(p => p.split(/\\s+/).filter(Boolean).length >= 10);\n\n  // Skip chapters that produce no valid paragraphs — don't increment chapter number\n  if (paragraphs.length === 0) continue;\n  realChapterNumber++;\n\n  paragraphs.forEach((paragraph_text, paragraph_index) => {\n    results.push({\n      json: {\n        ...settings,\n        granularity: 'paragraph',\n        chapter_number: realChapterNumber,\n        paragraph_index,\n        paragraph_text,\n        text: paragraph_text,\n        word_count: paragraph_text.split(/\\s+/).filter(Boolean).length\n      }\n    });\n  });\n}\nreturn results;"
+      },
+      "id": "543ce123-8b55-4a04-a003-7b0f8fdb3e43",
+      "name": "PxP Splitter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.text\n  || $input.first().json.book_text\n  || $input.first().json.data\n  || $input.first().json.content\n  || '';\n\nconst text = raw.replace(/\\r\\n/g, '\\n').replace(/\\r/g, '\\n');\nconst settings = $('Settings').first().json;\n\nreturn [{\n  json: {\n    ...settings,\n    granularity: 'full_book',\n    book_text: text,\n    text: text,\n    char_count: text.length,\n    word_count: text.split(/\\s+/).filter(Boolean).length\n  }\n}];"
+      },
+      "id": "4cdb806d-02e2-4c69-a529-d601b2086627",
+      "name": "Full Book Splitter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1584,
+        1456
+      ],
+      "id": "ca582ebe-d118-4259-a4d7-36cd58fbaca3",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1520,
+        1664
+      ],
+      "id": "284753c1-9bce-4cac-95a2-c84264b668bc",
+      "name": "Anthropic Chat Model4",
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkSize": 30000,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2224,
+        5408
+      ],
+      "id": "48894b1c-6f4a-4717-824d-343d96bff117",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "chunkSize": 30000,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2624,
+        6192
+      ],
+      "id": "59dcc4da-99bc-42be-9fe4-e2f79e6387b3",
+      "name": "Recursive Character Text Splitter1"
+    },
+    {
+      "parameters": {
+        "chunkSize": 300000,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        6992
+      ],
+      "id": "a8e0e449-0a97-4718-87c5-0eb94ef038f3",
+      "name": "Recursive Character Text Splitter2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        6272
+      ],
+      "id": "9ee59ef3-291d-41ff-82a2-4b34b5a30b1e",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "W80EBOZ6RyXCJupk",
+          "name": "Claude (EMM)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkSize": 30000,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        4112,
+        1360
+      ],
+      "id": "fce3512b-8d83-4108-9067-4f7ab502fe61",
+      "name": "Recursive Character Text Splitter3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cb9d10be-4eba-41ff-a8bf-57ef9155118c",
+              "name": "chapter_number",
+              "value": "={{ $json.chapter_number }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        656
+      ],
+      "id": "42b4a3b1-54ae-48f7-aeb8-1eb3c44cd6e3",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {
+    "Webhook — Book Upload": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.authorx.com",
+            "x-real-ip": "13.56.18.92",
+            "x-forwarded-for": "13.56.18.92",
+            "x-forwarded-proto": "https",
+            "connection": "upgrade",
+            "content-length": "182640",
+            "content-type": "multipart/form-data; boundary=----9542151337604216857792685933",
+            "traceparent": "00-6199f48bf1630bcb0d90d568c009d9de-55a0b571de0bec48-01",
+            "accept": "*/*",
+            "accept-language": "*",
+            "user-agent": "Deno/2.1.4 (variant; SupabaseEdgeRuntime/1.71.1)",
+            "accept-encoding": "gzip,br"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "filename": "46.txt.utf-8",
+            "uploadedBy": "elizabeth.m.main@gmail.com"
+          },
+          "webhookUrl": "https://n8n.authorx.com/webhook/book-analyzer",
+          "executionMode": "production"
+        },
+        "binary": {
+          "file": {
+            "mimeType": "text/plain",
+            "fileType": "text",
+            "fileExtension": "txt",
+            "data": "filesystem-v2",
+            "fileName": "46.txt.utf-8",
+            "id": "filesystem-v2:workflows/uumdhgwjU9sQryzWHLyWW/executions/temp/binary_data/4daa1e7d-4e8f-40f0-baf9-13c9feb59d45",
+            "fileSize": "182 kB"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook — Book Upload": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Settings": {
+      "main": [
+        [
+          {
+            "node": "CxC Splitter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "PxP Splitter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Full Book Splitter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Extract Text from TXT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract Text from PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text from PDF": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude — sentence_patterns": {
+      "main": [
+        [
+          {
+            "node": "Merge — PxP Branches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "spaCy Parser": {
+      "main": [
+        [
+          {
+            "node": "Merge — PxP Branches",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge — PxP Branches": {
+      "main": [
+        [
+          {
+            "node": "PxP Combiner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunker — narrative_arc": {
+      "main": [
+        [
+          {
+            "node": "Dry Run If — narrative_arc",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Supabase — narrative_arc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dry Run If — narrative_arc": {
+      "main": [
+        [
+          {
+            "node": "JSON Save — narrative_arc",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pinecone Upload — narrative_arc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunker — themes": {
+      "main": [
+        [
+          {
+            "node": "Dry Run If — themes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Supabase — themes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dry Run If — themes": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Pinecone Upload — themes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunker — pacing": {
+      "main": [
+        [
+          {
+            "node": "Dry Run If — pacing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Supabase — pacing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dry Run If — pacing": {
+      "main": [
+        [
+          {
+            "node": "JSON Save — pacing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pinecone Upload — pacing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI — narrative_arc": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Upload — narrative_arc",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI — themes": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Upload — themes",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI — pacing": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Upload — pacing",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text from TXT": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunker — chapter_summaries": {
+      "main": [
+        [
+          {
+            "node": "Supabase — chapter_summaries",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dry Run If — chapter_summaries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunker — dialogue": {
+      "main": [
+        [
+          {
+            "node": "Supabase — dialogue",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dry Run If — dialogue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunker — characters": {
+      "main": [
+        [
+          {
+            "node": "Supabase — characters",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dry Run If — characters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunker — grammar": {
+      "main": [
+        [
+          {
+            "node": "Supabase — grammar",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dry Run If — grammar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PxP Combiner": {
+      "main": [
+        [
+          {
+            "node": "Chunker — sentence_patterns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunker — sentence_patterns": {
+      "main": [
+        [
+          {
+            "node": "Supabase — sentence_patterns",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dry Run If — sentence_patterns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dry Run If — chapter_summaries": {
+      "main": [
+        [
+          {
+            "node": "JSON Save — chapter_summaries",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pinecone Upload — chapter_summaries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI — chapter_summaries": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Upload — chapter_summaries",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dry Run If — dialogue": {
+      "main": [
+        [
+          {
+            "node": "JSON Save — dialogue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pinecone Upload — dialogue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI — dialogue": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Upload — dialogue",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dry Run If — characters": {
+      "main": [
+        [
+          {
+            "node": "JSON Save — characters",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pinecone Upload — characters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI — characters": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Upload — characters",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dry Run If — grammar": {
+      "main": [
+        [
+          {
+            "node": "JSON Save — grammar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pinecone Upload — grammar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI — grammar": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Upload — grammar",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dry Run If — sentence_patterns": {
+      "main": [
+        [
+          {
+            "node": "JSON Save — sentence_patterns",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pinecone Upload — sentence_patterns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI — sentence_patterns": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Upload — sentence_patterns",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregator — CxC Branches": {
+      "main": [
+        [
+          {
+            "node": "Character Names Chunker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Character Names Chunker": {
+      "main": [
+        [
+          {
+            "node": "Supabase — character_names",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dry Run If — character_names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dry Run If — character_names": {
+      "main": [
+        [
+          {
+            "node": "JSON Save — character_names",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pinecone Upload — character_names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI — character_names": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Upload — character_names",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Upload — narrative_arc",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Upload — grammar",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader2": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Upload — characters",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader3": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Upload — dialogue",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader4": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Upload — chapter_summaries",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader5": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Upload — themes",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader6": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Upload — pacing",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader7": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Upload — sentence_patterns",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader8": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Upload — character_names",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LM — Full Book AI — narrative_arc": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Full Book AI — narrative_arc",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LM — Full Book AI — themes": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Full Book AI — themes",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LM — Full Book AI — pacing": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Full Book AI — pacing",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LM — CxC AI — chapter_summaries": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CxC AI — chapter_summaries",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LM — CxC AI — dialogue": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CxC AI — dialogue",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LM — CxC AI — characters": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CxC AI — characters",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LM — CxC AI — grammar": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CxC AI — grammar",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LM — Claude — sentence_patterns": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Claude — sentence_patterns",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CxC AI — dialogue": {
+      "main": [
+        [
+          {
+            "node": "Chunker — dialogue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CxC AI — characters": {
+      "main": [
+        [
+          {
+            "node": "Chunker — characters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CxC AI — grammar": {
+      "main": [
+        [
+          {
+            "node": "Chunker — grammar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Full Book AI — narrative_arc": {
+      "main": [
+        [
+          {
+            "node": "Chunker — narrative_arc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Full Book AI — themes": {
+      "main": [
+        [
+          {
+            "node": "Chunker — themes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Full Book AI — themes",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Full Book AI — pacing",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Full Book AI — pacing": {
+      "main": [
+        [
+          {
+            "node": "Chunker — pacing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CxC AI — chapter_summaries": {
+      "main": [
+        [
+          {
+            "node": "Chunker — chapter_summaries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Parser — Full Book AI — narrative_arc",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser — Full Book AI — narrative_arc": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Full Book AI — narrative_arc",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser — CxC AI — chapter_summaries": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "CxC AI — chapter_summaries",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Parser — CxC AI — chapter_summaries",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CxC Splitter": {
+      "main": [
+        [
+          {
+            "node": "Aggregator — CxC Branches",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Chunker — characters",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PxP Splitter": {
+      "main": [
+        [
+          {
+            "node": "Claude — sentence_patterns",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "spaCy Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Full Book Splitter": {
+      "main": [
+        [
+          {
+            "node": "Full Book AI — narrative_arc",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Full Book AI — themes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Full Book AI — pacing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser — Claude — sentence_patterns": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Claude — sentence_patterns",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "CxC AI — dialogue",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader5",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter2": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader6",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter3": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader4",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "CxC AI — chapter_summaries",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CxC AI — dialogue",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CxC AI — characters",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CxC AI — grammar",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Aggregator — CxC Branches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "6c72c8ce-0f15-40ae-aeed-e4c9d6d4e691",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5c74c19c214b1a06b2e9f3e3720b45091dc0513133504a3097e98ffaf81fe68d"
+  },
+  "id": "uumdhgwjU9sQryzWHLyWW",
+  "tags": [
+    {
+      "updatedAt": "2026-03-10T21:01:47.044Z",
+      "createdAt": "2026-03-10T21:01:47.044Z",
+      "id": "fR5uNmjNBu0iBBpC",
+      "name": "claudecode"
+    },
+    {
+      "updatedAt": "2026-03-10T21:01:51.522Z",
+      "createdAt": "2026-03-10T21:01:51.522Z",
+      "id": "pPx9F8zyCnY9nLdd",
+      "name": "cc-ba"
+    }
+  ]
+}

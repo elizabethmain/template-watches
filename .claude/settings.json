@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:images.unsplash.com)",
+      "WebFetch(domain:unsplash.com)",
+      "WebFetch(domain:www.introducinggeneva.com)",
+      "WebFetch(domain:nomadparadise.com)",
+      "WebFetch(domain:www.worldtravelguide.net)",
+      "WebFetch(domain:girlswanderlust.com)",
+      "WebFetch(domain:www.theglobetrottingdetective.com)",
+      "Bash(xargs perl:*)",
+      "WebFetch(domain:visit-yvoire.com)",
+      "WebFetch(domain:api.unsplash.com)",
+      "Read(//Users/elizabethmain/Downloads/**)",
+      "Bash(exiftool /Users/elizabethmain/Downloads/gabriel-garcia-marengo-WNDFHt6Nr54-unsplash.jpg)",
+      "Bash(while read:*)",
+      "Bash(do grep:*)",
+      "Bash(curl -sL \"https://images.unsplash.com/photo-bo3KAZHZwIk?w=1400&q=85&auto=format&fit=crop\" -o test_watch.jpg)",
+      "Bash(xargs sed:*)",
+      "Bash(PROJ=\"/Users/elizabethmain/Documents/Claude Code Test Project\")",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(sed -i '' '/preconnect.*unsplash/d' \"$f\")",
+      "Bash(done)",
+      "Bash(git --version)",
+      "Bash(gh --version)"
+    ],
+    "additionalDirectories": [
+      "/Users/elizabethmain/Downloads"
+    ]
+  }
+}
